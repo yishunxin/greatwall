@@ -108,5 +108,5 @@ def gen_task():
 
 
 if __name__ == '__main__':
-    for i in range(1,100000):
+    for i in range(100000, 200000):
         userinfo_spider(i)
