@@ -108,5 +108,5 @@ def gen_task():
 
 
 if __name__ == '__main__':
-    page_list = gen_task()
-    Parallel(n_jobs=-1)(delayed(userinfo_spider)(page_list[i]) for i in trange(len(page_list)))
+    for i in range(1,100000):
+        userinfo_spider(i)
