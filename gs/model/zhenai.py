@@ -26,3 +26,9 @@ class Member(db.Model):
     zhenxin = db.Column(db.String)
     zhenxintrial = db.Column(db.String)
     create_time = db.Column(db.DateTime, default=mytime.get_now_datetime)
+
+
+class MemberId(db.Model):
+    __tablename__ = 'member_id'
+    pk = db.Column(db.Integer, primary_key=True)
+    member_id = db.Column(db.Integer)

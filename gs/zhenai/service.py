@@ -2,7 +2,7 @@
 import logging
 
 from gs.common.cdb import db_zhenai as db
-from gs.model.zhenai import Member
+from gs.model.zhenai import Member, MemberId
 from gs.util import mymodel
 
 logger = logging.getLogger('zhenai_svc')
@@ -36,6 +36,19 @@ class MemberSvc(object):
             model_list.append(mymodel.model_todbdict(member))
         try:
             db.session.execute(Member.__table__.insert(), model_list)
+            db.session.commit()
+            return True
+        except Exception as e:
+            logger.exception(e)
+            db.session.rollback()
+            return False
+
+    def memberid_batchsave(self, memberids):
+        model_list = list()
+        for memberid in memberids:
+            model_list.append(mymodel.model_todbdict(memberid))
+        try:
+            db.session.execute(MemberId.__table__.insert(), model_list)
             db.session.commit()
             return True
         except Exception as e:
