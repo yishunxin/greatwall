@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from gs.common.cdb import db_zhenai as db
+from gs.common.cdb import db_baihe as db
 from gs.util import mytime
 
 

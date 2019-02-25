@@ -4,9 +4,9 @@ __author__ = 'yishunxin'
 # 线上数据库
 HOST = '127.0.0.1'
 PORT = 3306
-USER = 'zhenai_user'
-PASSWD = 'zhenai_user_123!'
-DB = 'zhenai'
+USER = 'baihe_user'
+PASSWD = 'baihe_user_123!'
+DB = 'baihe'
 
 CHARSET = 'utf8'
 # sqlalchemy 配置 看下面的链接

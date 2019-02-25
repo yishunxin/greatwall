@@ -1,11 +1,11 @@
 # -*- coding:utf-8 -*-
 import logging
 
-from gs.common.cdb import db_zhenai as db
-from gs.model.zhenai import Member, MemberId, Photo
+from gs.common.cdb import db_baihe as db
+from gs.model.baihe import Member, MemberId, Photo
 from gs.util import mymodel
 
-logger = logging.getLogger('zhenai_svc')
+logger = logging.getLogger('baihe_svc')
 
 
 class MemberSvc(object):
