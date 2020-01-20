@@ -81,8 +81,7 @@ def mid_order(t_tree):
     result = []
     while result:
         cur_node = result.pop()
-        if not cur_node:
-            pass
+        tree_list.append()
         if cur_node.left:
             tree_list.append(cur_node.left)
         if cur_node.right:
@@ -133,15 +132,18 @@ def post_order(in_tree):
     tree_stack = [in_tree]
     result = []
     while tree_stack:
-        cur_node = tree_stack.pop()
+        cur_node = tree_stack.pop(0)
+        result.insert(0,cur_node.val)
         if cur_node.left:
-            pass
+            tree_stack.insert(0,cur_node.left)
         if cur_node.right:
-            pass
+            tree_stack.insert(0,cur_node.right)
+    return result
 
 
 if __name__ == '__main__':
     mytree = list2tree([1, 2, 3, 4,5,6,7,8,9,10])
     # print(pre_order(mytree))
     print (post_order_by_recur(mytree))
+    print (post_order(mytree))
     pass
