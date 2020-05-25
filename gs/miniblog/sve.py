@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 import logging
 app = Flask(__name__)
 
@@ -8,4 +8,4 @@ def index():
         return render_template("index.html")
     except Exception as e:
         logging.exception(e)
-        return False
+        return jsonify({1:1})
