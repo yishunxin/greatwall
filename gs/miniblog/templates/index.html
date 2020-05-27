@@ -3,8 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <title>miniblog</title>
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 </head>
+<style>
+    .el-col {
+        border-radius: 4px;
+    }
+
+    .bg-purple-dark {
+        background: #99a9bf;
+    }
+
+    .bg-purple {
+        background: #d3dce6;
+    }
+
+    .bg-purple-light {
+        background: #e5e9f2;
+    }
+
+    .grid-content {
+        border-radius: 4px;
+        min-height: 36px;
+    }
+
+    .text {
+        font-size: 14px;
+    }
+
+    .item {
+        margin-bottom: 18px;
+    }
+
+    .clearfix:before,
+    .clearfix:after {
+        display: table;
+        content: "";
+    }
+
+    .clearfix:after {
+        clear: both
+    }
+
+    .box-card {
+        width: 480px;
+    }
+</style>
 <body>
+<div id="app">
+    <el-row :gutter="10">
+        {% for shoppinglist in shoppinglists %}
+            <el-col :xs="8" :sm="6" :md="4" :lg="3" :xl="1">
+                <div class="grid-content bg-purple">
+                    <el-card class="box-card">
+                        <div slot="header" class="clearfix">
+                            <span>{{ shoppinglist.name }}</span>
+                            <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+                        </div>
+                        {% for item in shoppinglist.items %}
+                            <div class="text item">
+                                {{ item.name }}
+                            </div>
+                        {% endfor %}
+                    </el-card>
+                </div>
+            </el-col>
+        {% endfor %}
+    </el-row>
+</div>
 
 </body>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: function () {
+            return {visible: false}
+        }
+    })
+</script>
 </html>
