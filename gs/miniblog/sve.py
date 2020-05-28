@@ -1,10 +1,11 @@
+import json
 import logging
-
-from flask import Flask, render_template
+from cresponse import common_json_response
+from flask import Flask, render_template, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root@127.0.0.1:3306/miniblog?charset=utf8mb4'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://shekinah:247365@114.55.33.127:3306/miniblog?charset=utf8mb4'
 db = SQLAlchemy(app, session_options={'autoflush': False})
 
 
@@ -44,7 +45,16 @@ class Svc(object):
 def index():
     try:
         shoppinglists = Svc().all_item()
-        return render_template("index.html", shoppinglists=shoppinglists)
+        return render_template("index.html",shoppinglists=shoppinglists)
+    except Exception as e:
+        logging.exception(e)
+        return render_template('error.html')
+
+@app.route('/shoppinglists',methods=['GET'])
+def shoppinglists():
+    try:
+        result = Svc().all_item()
+        return common_json_response(result=result)
     except Exception as e:
         logging.exception(e)
         return render_template('error.html')
