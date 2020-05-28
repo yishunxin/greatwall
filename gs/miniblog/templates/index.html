@@ -36,6 +36,14 @@
         margin-bottom: 18px;
     }
 
+    .clearfix {
+        font-size: 20px;
+    }
+
+    .el-card__header {
+        padding: 10px 5px 5px 5px;
+    }
+
     .clearfix:before,
     .clearfix:after {
         display: table;
@@ -53,37 +61,101 @@
 <body>
 <div id="app">
     <el-row :gutter="10">
-        {% for shoppinglist in shoppinglists %}
+        <div v-for="shoppinglist in shoppinglists">
             <el-col :xs="8" :sm="6" :md="4" :lg="3" :xl="1">
                 <div class="grid-content bg-purple">
                     <el-card class="box-card">
                         <div slot="header" class="clearfix">
-                            <span>{{ shoppinglist.name }}</span>
-                            <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+                            <input v-model="shoppinglist.name" style="font-size: 30px;border: none;width: 50%">
+                            <el-button icon="el-icon-delete" type="text" style="float: right"></el-button>
+                            <el-button icon="el-icon-check" style="float: right;" type="text"></el-button>
                         </div>
-                        {% for item in shoppinglist.items %}
-                            <div class="text item">
-                                {{ item.name }}
-                            </div>
-                        {% endfor %}
+                        <el-table
+                                :data="shoppinglist.items"
+                                stripe
+                                style="width: 100%">
+                            <el-table-column
+                                    prop="name"
+                                    label="东西"
+                                    width="160">
+                                <template slot-scope="scope">
+                                    <input v-model="scope.row.name"
+                                           style="border: none;background: inherit;font-size: 15px;width: 150px">
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    prop="name"
+                                    label="价格"
+                                    width="150">
+                                <template slot-scope="scope">
+                                    <input v-model="scope.row.price"
+                                           style="border: none;background: inherit;font-size: 15px;width: 120px">
+                                </template>
+                            </el-table-column>
+                            <el-table-column
+                                    prop="name"
+                                    label="操作">
+                                <template slot-scope="scope">
+                                    <el-button icon="el-icon-check" size="mini" on-click=""></el-button>
+                                    <el-button icon="el-icon-delete" size="mini"></el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
                     </el-card>
                 </div>
             </el-col>
-        {% endfor %}
+        </div>
     </el-row>
 </div>
 
 </body>
 <!-- import Vue before Element -->
+<script src="https://cdn.staticfile.org/jquery/2.0.0/jquery.min.js"></script>
 <script src="https://unpkg.com/vue/dist/vue.js"></script>
 <!-- import JavaScript -->
 <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 <script>
-    new Vue({
-        el: '#app',
-        data: function () {
-            return {visible: false}
+    var Main = {
+        delimiters: ['{[', ']}'],
+        mounted: function () {
+            this.getshoppinglists()
+
+        },
+        data() {
+            return {
+                shoppinglists: []
+            }
+        },
+        methods: {
+            httpget:function (url,params) {
+                let request = $.ajax({
+                    url: url,
+                    method: "GET",
+                    data: params,
+                    contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+                    dataType: "json"
+                });
+                request.done(function (data) {
+                    return data;
+                });
+                request.fail(function (jqXHR, textStatus) {
+                    console.log("Request failed: " + textStatus);
+                    return null;
+                });
+            },
+            saveitem:function () {
+
+            },
+            getshoppinglists: function () {
+                let that = this;
+                let data = that.httpget('/shoppinglists');
+                console.log(data)
+                that.shoppinglists=data.result;
+            }
+
         }
-    })
+    };
+    let Ctor = Vue.extend(Main);
+    new Ctor().$mount('#app')
 </script>
 </html>
