@@ -127,7 +127,7 @@
             }
         },
         methods: {
-            httpget:function (url,params) {
+            httpget: function (url, params) {
                 let request = $.ajax({
                     url: url,
                     method: "GET",
@@ -135,22 +135,28 @@
                     contentType: "application/x-www-form-urlencoded;charset=UTF-8",
                     dataType: "json"
                 });
-                request.done(function (data) {
-                    return data;
-                });
-                request.fail(function (jqXHR, textStatus) {
-                    console.log("Request failed: " + textStatus);
-                    return null;
-                });
+                return request;
             },
-            saveitem:function () {
-
+            httpost: function (url, data) {
+                let request = $.ajax({
+                    url: url,
+                    method: "POST",
+                    data: data,
+                    contentType: "application/x-www-form-urlencoded;charset=UTF-8",
+                    dataType: "json"
+                });
+                return request;
+            },
+            saveitem: function (item) {
+                let that = this
+                that.httpost()
+                pass
             },
             getshoppinglists: function () {
                 let that = this;
-                let data = that.httpget('/shoppinglists');
-                console.log(data)
-                that.shoppinglists=data.result;
+                that.httpget('/shoppinglists').done(function (data) {
+                    that.shoppinglists = data.result
+                });
             }
 
         }
