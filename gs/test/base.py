@@ -1,14 +1,11 @@
-import sys
-from flask import Flask
-app=Flask(__name__)
-@app.route('/test',methods=['GET'])
-def test():
-    a = [1]
-    pro(a)
-    print (a)
-    return '1'
+class A():
+    def p(self):
+        print (1)
+    a = 1
+    a1 =2
+class B(A):
+    b = 1
+    b1 = 2
 
-def pro(t):
-    t.append(1)
-if __name__ == "__main__":
-    app.run(debug=True)
+bb = B()
+print (bb)

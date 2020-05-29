@@ -1,11 +1,15 @@
 import json
 import logging
+
 from cresponse import common_json_response
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import inspect
+from sqlalchemy.orm.attributes import InstrumentedAttribute
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://shekinah:247365@114.55.33.127:3306/miniblog?charset=utf8mb4'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app, session_options={'autoflush': False})
 
 
@@ -40,7 +44,10 @@ class Svc(object):
             shoppinglist.items = item_map.get(shoppinglist.list_id)
         return shoppinglists
 
-    def save_item(self,item):
+    def item_list(self,list_id):
+        return db.session.query(Item).filter(Item.list_id==list_id).all()
+
+    def save_item(self, item):
         item_id = item.item_id
         try:
             if not item_id:
@@ -56,15 +63,41 @@ class Svc(object):
             db.session.rollback()
             return False
 
-    def save_shoppinglist(self,shoppinglist):
-        list_id =  shoppinglist.list_id
+    def save_shoppinglist(self, shoppinglist):
+        list_id = shoppinglist.list_id
         try:
             if not list_id:
                 db.session.add(shoppinglist)
             else:
                 t_dict = model2dbdict(shoppinglist)
+                logging.info(t_dict)
                 t_dict.pop('list_id')
-                db.session.query(ShoppingList).filter(ShoppingList.list_id==list_id).update(t_dict)
+                db.session.query(ShoppingList).filter(ShoppingList.list_id == list_id).update(t_dict)
+            db.session.commit()
+            return True
+        except Exception as e:
+            logging.exception(e)
+            db.session.rollback()
+            return False
+
+    def item_delete(self, item_id=None, list_id=None):
+        try:
+            q = db.session.query(Item)
+            if item_id is not None:
+                q = q.filter(Item.item_id == item_id)
+            if list_id is not None:
+                q = q.filter(Item.list_id == list_id)
+            q.delete()
+            db.session.commit()
+            return True
+        except Exception as e:
+            logging.exception(e)
+            db.session.rollback()
+            return False
+
+    def shopplist_delete(self, list_id):
+        try:
+            db.session.query(ShoppingList).filter(ShoppingList.list_id == list_id).delete()
             db.session.commit()
             return True
         except Exception as e:
@@ -97,30 +130,33 @@ def shoppinglists():
 def item_save():
     try:
         data = json.loads(request.data)
-        if not data.get('item_id'):
-            item = dict2model(data, Item)
-            db.session.add(item)
-        else:
-            item_id = data.get('item_id')
-            data.pop('item_id')
-            db.session.query(Item).filter(Item.item_id == item_id).update(data)
-        db.session.commit()
+        item = dict2model(data, Item)
+        if not Svc().save_item(item):
+            return render_template('error.html')
         return common_json_response(code=0)
     except Exception as e:
         logging.exception(e)
-        db.session.rollback()
         return render_template('error.html')
 
+@app.route('/item/list', methods=['GET'])
+def item_list():
+    try:
+        list_id = request.args.get('list_id')
+        result = Svc().item_list(list_id)
+        return common_json_response(result=result)
+    except Exception as e:
+        logging.exception(e)
+        return render_template('error.html')
 
 @app.route('/item/delete', methods=['GET'])
 def item_delete():
     try:
         item_id = request.args.get("item_id")
-        db.session.query(Item).filter(Item.item_id == item_id).delete()
-        db.session.commit()
+        if not Svc().item_delete(item_id):
+            return render_template('error.html')
+        return common_json_response(code=0)
     except Exception as e:
         logging.exception(e)
-        db.session.rollback()
         return render_template('error.html')
 
 
@@ -129,25 +165,43 @@ def shoppinglist_save():
     try:
         data = json.loads(request.data)
         items = data.get('items')
-        list_id = data.get('list_id')
-        if not list_id:
-
-        return common_json_response()
+        if items:
+            for i in items:
+                item = dict2model(i, Item)
+                if not Svc().save_item(item):
+                    return render_template('error.html')
+            data.pop('items')
+        shoppinglist = dict2model(data, ShoppingList)
+        if not Svc().save_shoppinglist(shoppinglist):
+            return render_template('error.html')
+        return common_json_response(code=0)
     except Exception as e:
         logging.exception(e)
         return render_template('error.html')
 
 
-def dict2model(t_dict, model):
-    for k, v in t_dict:
-        if hasattr(model,k):
+@app.route('/shoppinglist/delete', methods=['GET'])
+def shoppinglist_delete():
+    try:
+        list_id = request.args.get("list_id")
+        if not Svc().shopplist_delete(list_id):
+            return render_template('error.html')
+        return common_json_response(code=0)
+    except Exception as e:
+        logging.exception(e)
+        return render_template('error.html')
+
+
+def dict2model(t_dict, model_class):
+    model = model_class()
+    for k, v in t_dict.items():
+        if hasattr(model, k):
             setattr(model, k, v)
     return model
 
-def model2dbdict(model):
-    t_dict = {}
-    for k in dir(model):
-        if k.startswith('_'):
-            continue
-        t_dict[k] = getattr(model,k)
-    return t_dict
+
+def model2dbdict(item):
+    item_dict = dict()
+    for k in inspect(item.__class__).c.keys():
+        item_dict[k] = getattr(item,k)
+    return item_dict

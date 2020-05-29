@@ -60,52 +60,62 @@
 </style>
 <body>
 <div id="app">
-    <el-row :gutter="10">
-        <div v-for="shoppinglist in shoppinglists">
-            <el-col :xs="8" :sm="6" :md="4" :lg="3" :xl="1">
-                <div class="grid-content bg-purple">
-                    <el-card class="box-card">
-                        <div slot="header" class="clearfix">
-                            <input v-model="shoppinglist.name" style="font-size: 30px;border: none;width: 50%">
-                            <el-button icon="el-icon-delete" type="text" style="float: right"></el-button>
-                            <el-button icon="el-icon-check" style="float: right;" type="text"></el-button>
-                        </div>
-                        <el-table
-                                :data="shoppinglist.items"
-                                stripe
-                                style="width: 100%">
-                            <el-table-column
-                                    prop="name"
-                                    label="东西"
-                                    width="160">
-                                <template slot-scope="scope">
-                                    <input v-model="scope.row.name"
-                                           style="border: none;background: inherit;font-size: 15px;width: 150px">
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    prop="name"
-                                    label="价格"
-                                    width="150">
-                                <template slot-scope="scope">
-                                    <input v-model="scope.row.price"
-                                           style="border: none;background: inherit;font-size: 15px;width: 120px">
-                                </template>
-                            </el-table-column>
-                            <el-table-column
-                                    prop="name"
-                                    label="操作">
-                                <template slot-scope="scope">
-                                    <el-button icon="el-icon-check" size="mini" on-click=""></el-button>
-                                    <el-button icon="el-icon-delete" size="mini"></el-button>
-                                </template>
-                            </el-table-column>
-                        </el-table>
-                    </el-card>
-                </div>
-            </el-col>
+    <div style="display: flex;flex-wrap: wrap">
+        <div v-for="(shoppinglist,index) in shoppinglists" style="margin-right: 30px;margin-bottom: 30px;">
+            <div class="grid-content bg-purple" v-on:click="curIndex=index">
+                <el-card class="box-card">
+                    <div slot="header" class="clearfix">
+                        <input v-model="shoppinglist.name" style="font-size: 30px;border: none;width: 50%"
+                               v-bind:key="index">
+                        <el-button icon="el-icon-delete" type="text" style="float: right"
+                                   v-on:click="deleteshoppinglist(shoppinglist.list_id)"></el-button>
+                        <el-button icon="el-icon-check" style="float: right;" type="text"
+                                   v-on:click="saveshoppinglist(shoppinglist)"></el-button>
+                    </div>
+                    <el-table
+                            :data="shoppinglist.items"
+                            stripe
+                            style="width: 100%">
+                        <el-table-column
+                                prop="name"
+                                label="东西"
+                                width="160">
+                            <template slot-scope="scope">
+                                <input v-model="scope.row.name"
+                                       style="border: none;background: inherit;font-size: 15px;width: 150px">
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                prop="name"
+                                label="价格"
+                                width="150">
+                            <template slot-scope="scope">
+                                <input v-model="scope.row.price"
+                                       style="border: none;background: inherit;font-size: 15px;width: 120px">
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                align="right"
+                                prop="name"
+                                label="操作">
+                            <template slot="header" slot-scope="scope">
+                                <el-button type="primary" size="small" plain
+                                           v-on:click="additem(shoppinglist.list_id)">加东西
+                                </el-button>
+                            </template>
+                            <template slot-scope="scope">
+                                <el-button icon="el-icon-check" size="mini" on-click=""></el-button>
+                                <el-button icon="el-icon-delete" size="mini"
+                                           v-on:click="deleteitem(scope.row.item_id,shoppinglist.list_id)"></el-button>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </el-card>
+            </div>
         </div>
-    </el-row>
+
+    </div>
+     <el-button style="position: relative" type="primary" v-on:click="addshoppinglist">加清单</el-button>
 </div>
 
 </body>
@@ -119,11 +129,11 @@
         delimiters: ['{[', ']}'],
         mounted: function () {
             this.getshoppinglists()
-
         },
         data() {
             return {
-                shoppinglists: []
+                shoppinglists: [],
+                curIndex: 0
             }
         },
         methods: {
@@ -138,25 +148,68 @@
                 return request;
             },
             httpost: function (url, data) {
+                console.log(data)
                 let request = $.ajax({
                     url: url,
+                    contentType: 'application/json',
                     method: "POST",
-                    data: data,
-                    contentType: "application/x-www-form-urlencoded;charset=UTF-8",
-                    dataType: "json"
+                    data: JSON.stringify(data),
+                    dataType: "json",
                 });
                 return request;
             },
             saveitem: function (item) {
                 let that = this
-                that.httpost()
-                pass
+                that.httpost('/item/save', item).done(function (data) {
+                    that.getitemlists(item.list_id)
+                })
+            },
+            saveshoppinglist: function (shoppinglist) {
+                let that = this
+                that.httpost('/shoppinglist/save', shoppinglist).done(function (data) {
+                    that.getshoppinglists()
+                })
             },
             getshoppinglists: function () {
                 let that = this;
                 that.httpget('/shoppinglists').done(function (data) {
                     that.shoppinglists = data.result
                 });
+            },
+            getitemlists: function (list_id) {
+                let that = this
+                that.httpget('/item/list', {'list_id': list_id}).done(function (data) {
+                    that.shoppinglists[that.curIndex] = data.result
+                })
+            },
+            deleteshoppinglist: function (list_id) {
+                let that = this
+                that.httpget('/shoppinglist/delete', {'list_id': list_id}).done(function (data) {
+                    that.getshoppinglists()
+                })
+            },
+            deleteitem: function (item_id, list_id) {
+                console.log(item_id, list_id)
+                let that = this
+                that.httpget('/item/delete', {'item_id': item_id}).done(function (data) {
+                    that.getitemlists(list_id)
+                })
+            },
+            additem: function (list_id) {
+                let that = this
+                console.log(that.curIndex)
+                that.shoppinglists[that.curIndex].items.push({
+                    'name': null,
+                    'price': null,
+                    'list_id': list_id,
+                    'item_id': null
+                })
+            },
+            addshoppinglist: function () {
+                let that = this
+                that.httpost('/shoppinglist/save', {'name': null}).done(function (data) {
+                    that.getshoppinglists()
+                })
             }
 
         }
