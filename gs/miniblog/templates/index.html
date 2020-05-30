@@ -104,7 +104,7 @@
                                 </el-button>
                             </template>
                             <template slot-scope="scope">
-                                <el-button icon="el-icon-check" size="mini" on-click=""></el-button>
+                                <el-button icon="el-icon-check" size="mini" v-on:click="additem(shoppinglist.list_id)"></el-button>
                                 <el-button icon="el-icon-delete" size="mini"
                                            v-on:click="deleteitem(scope.row.item_id,shoppinglist.list_id)"></el-button>
                             </template>
@@ -197,7 +197,6 @@
             },
             additem: function (list_id) {
                 let that = this
-                console.log(that.curIndex)
                 that.shoppinglists[that.curIndex].items.push({
                     'name': null,
                     'price': null,
