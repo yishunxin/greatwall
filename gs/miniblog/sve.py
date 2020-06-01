@@ -17,6 +17,8 @@ class ShoppingList(db.Model):
     __tablename__ = 'shopping_list'
     list_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Integer)
+    desc = db.Column(db.String)
+    images = db.Column(db.String)
 
 
 class Item(db.Model):
@@ -41,6 +43,9 @@ class Svc(object):
             else:
                 item_map[item.list_id].append(item)
         for shoppinglist in shoppinglists:
+            if shoppinglist.images:
+                images = shoppinglist.images.split(',')
+                shoppinglist.imagelist = [{'name':item,'url':'/images/{}'.format(item)} for item in images]
             shoppinglist.items = item_map.get(shoppinglist.list_id)
         return shoppinglists
 
@@ -165,6 +170,7 @@ def shoppinglist_save():
     try:
         data = json.loads(request.data)
         items = data.get('items')
+        imagelist = data.get('imagelist',[])
         if items:
             for i in items:
                 item = dict2model(i, Item)
@@ -172,6 +178,7 @@ def shoppinglist_save():
                     return render_template('error.html')
             data.pop('items')
         shoppinglist = dict2model(data, ShoppingList)
+        shoppinglist.images = ','.join([item['name'] for item in imagelist])
         if not Svc().save_shoppinglist(shoppinglist):
             return render_template('error.html')
         return common_json_response(code=0)
@@ -186,6 +193,16 @@ def shoppinglist_delete():
         list_id = request.args.get("list_id")
         if not Svc().shopplist_delete(list_id):
             return render_template('error.html')
+        return common_json_response(code=0)
+    except Exception as e:
+        logging.exception(e)
+        return render_template('error.html')
+
+@app.route('/image/upload', methods=['POST'])
+def image_save():
+    try:
+        t_file = request.files['file']
+        t_file.save(t_file.filename)
         return common_json_response(code=0)
     except Exception as e:
         logging.exception(e)
