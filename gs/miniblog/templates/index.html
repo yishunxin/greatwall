@@ -124,6 +124,7 @@
                                 list-type="picture-card"
                                 :file-list="shoppinglist.imagelist"
                                 :on-preview="handlePictureCardPreview"
+                                :on-success="handlePicUploadSuccess"
                                 :on-remove="handleRemove">
                             <i class="el-icon-plus"></i>
                         </el-upload>
@@ -255,6 +256,7 @@
             },
             handlePicUploadSuccess(response, file, fileList){
                 let that=this
+                that.shoppinglists[that.curIndex].imagelist= fileList
                 that.saveshoppinglist(that.shoppinglists[that.curIndex])
             }
         }
