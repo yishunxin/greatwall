@@ -202,7 +202,7 @@ def shoppinglist_delete():
 def image_save():
     try:
         t_file = request.files['file']
-        t_file.save(t_file.filename)
+        t_file.save('images/{}'.format(t_file.filename))
         return common_json_response(code=0)
     except Exception as e:
         logging.exception(e)
