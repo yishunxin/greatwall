@@ -104,7 +104,7 @@
                                 </el-button>
                             </template>
                             <template slot-scope="scope">
-                                <el-button icon="el-icon-check" size="mini" on-click=""></el-button>
+                                <el-button icon="el-icon-check" size="mini" v-on:click="saveitem(scope.row)"></el-button>
                                 <el-button icon="el-icon-delete" size="mini"
                                            v-on:click="deleteitem(scope.row.item_id,shoppinglist.list_id)"></el-button>
                             </template>
@@ -115,7 +115,7 @@
         </div>
 
     </div>
-     <el-button style="position: relative" type="primary" v-on:click="addshoppinglist">加清单</el-button>
+    <el-button style="position: relative" type="primary" v-on:click="addshoppinglist">加清单</el-button>
 </div>
 
 </body>
@@ -179,7 +179,7 @@
             getitemlists: function (list_id) {
                 let that = this
                 that.httpget('/item/list', {'list_id': list_id}).done(function (data) {
-                    that.shoppinglists[that.curIndex] = data.result
+                    that.shoppinglists[that.curIndex].items = data.result
                 })
             },
             deleteshoppinglist: function (list_id) {
@@ -197,13 +197,22 @@
             },
             additem: function (list_id) {
                 let that = this
-                console.log(that.curIndex)
-                that.shoppinglists[that.curIndex].items.push({
-                    'name': null,
-                    'price': null,
-                    'list_id': list_id,
-                    'item_id': null
-                })
+                console.log(that.curIndex,that.shoppinglists[that.curIndex])
+                if (that.shoppinglists[that.curIndex].items == null) {
+                    that.shoppinglists[that.curIndex].items = [{
+                        'name': null,
+                        'price': null,
+                        'list_id': list_id,
+                        'item_id': null
+                    }]
+                } else {
+                    that.shoppinglists[that.curIndex].items.push({
+                        'name': null,
+                        'price': null,
+                        'list_id': list_id,
+                        'item_id': null
+                    })
+                }
             },
             addshoppinglist: function () {
                 let that = this
