@@ -156,6 +156,8 @@
             return {
                 shoppinglists: [],
                 curIndex: 0,
+                dialogImageUrl:'',
+                dialogVisible:false
             }
         },
         methods: {
@@ -243,14 +245,18 @@
                 })
             },
             handleRemove(file, fileList) {
-
-                console.log(file, fileList);
+                let that=this
+                that.shoppinglists[that.curIndex].imagelist=fileList
+                that.saveshoppinglist(that.shoppinglists[that.curIndex])
             },
             handlePictureCardPreview(file) {
                 this.dialogImageUrl = file.url;
                 this.dialogVisible = true;
             },
-
+            handlePicUploadSuccess(response, file, fileList){
+                let that=this
+                that.saveshoppinglist(that.shoppinglists[that.curIndex])
+            }
         }
     };
     let Ctor = Vue.extend(Main);
