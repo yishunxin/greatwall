@@ -4,16 +4,11 @@ import quopri
 import warnings
 
 import typeutil
-from gs.util.mymodel import jsontomodel
 
 
 def encode(value):
     context = Pickler()
     return json.dumps(context.flatten(value), ensure_ascii=False)
-
-
-def copy(entity):
-    return jsontomodel(encode(entity), type(entity))
 
 
 class Pickler(object):
