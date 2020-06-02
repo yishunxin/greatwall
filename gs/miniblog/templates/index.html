@@ -76,6 +76,7 @@
                             :data="shoppinglist.items"
                             stripe
                             show-summary
+                            :summary-method="getSummaries"
                             style="width: 100%">
                         <el-table-column
                                 prop="name"
@@ -87,7 +88,7 @@
                             </template>
                         </el-table-column>
                         <el-table-column
-                                prop="name"
+                                prop="price"
                                 label="价格"
                                 sortable
                                 width="150">
@@ -260,7 +261,34 @@
                 let that=this
                 that.shoppinglists[that.curIndex].imagelist= fileList
                 that.saveshoppinglist(that.shoppinglists[that.curIndex])
-            }
+            },
+      getSummaries:function(param) {
+        const { columns, data } = param;
+        const sums = [];
+        columns.forEach((column, index) => {
+          if (index === 0) {
+            sums[index] = '总价';
+            return;
+          }
+          console.log(param)
+          const values = data.map(item => Number(item[column.property]));
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return prev + curr;
+              } else {
+                return prev;
+              }
+            }, 0);
+            sums[index] += ' 元';
+          } else {
+            sums[index] = 'N/A';
+          }
+        });
+
+        return sums;
+      }
         }
     };
     let Ctor = Vue.extend(Main);
