@@ -65,7 +65,7 @@
             <div class="grid-content bg-purple" v-on:click="curIndex=index">
                 <el-card class="box-card">
                     <div slot="header" class="clearfix">
-                        <input v-model="shoppinglist.name" style="font-size: 30px;border: none;width: 50%"
+                        <input v-model="shoppinglist.name" style="font-size: 30px;border: none"
                                v-bind:key="index">
                         <el-button icon="el-icon-delete" type="text" style="float: right"
                                    v-on:click="deleteshoppinglist(shoppinglist.list_id)"></el-button>
@@ -75,6 +75,8 @@
                     <el-table
                             :data="shoppinglist.items"
                             stripe
+                            show-summary
+                            :summary-method="getSummaries"
                             style="width: 100%">
                         <el-table-column
                                 prop="name"
@@ -86,8 +88,9 @@
                             </template>
                         </el-table-column>
                         <el-table-column
-                                prop="name"
+                                prop="price"
                                 label="价格"
+                                sortable
                                 width="150">
                             <template slot-scope="scope">
                                 <input v-model="scope.row.price"
@@ -105,18 +108,40 @@
                             </template>
                             <template slot-scope="scope">
                                 <el-button icon="el-icon-check" size="mini"
-                                           v-on:click="additem(shoppinglist.list_id)"></el-button>
+                                           v-on:click="saveitem(scope.row)"></el-button>
                                 <el-button icon="el-icon-delete" size="mini"
                                            v-on:click="deleteitem(scope.row.item_id,shoppinglist.list_id)"></el-button>
                             </template>
                         </el-table-column>
                     </el-table>
+                    <div>
+                        <el-input
+                                type="textarea"
+                                :autosize="{ minRows: 2, maxRows: 4}"
+                                placeholder="请输入内容"
+                                v-model="shoppinglist.desc">
+                        </el-input>
+
+                        <el-upload
+                                action="/image/upload"
+                                list-type="picture-card"
+                                :file-list="shoppinglist.imagelist"
+                                :on-preview="handlePictureCardPreview"
+                                :on-success="handlePicUploadSuccess"
+                                :on-remove="handleRemove">
+                            <i class="el-icon-plus"></i>
+                        </el-upload>
+                        <el-dialog :visible.sync="dialogVisible">
+                            <img width="100%" :src="dialogImageUrl" alt="">
+                        </el-dialog>
+                    </div>
                 </el-card>
             </div>
         </div>
 
     </div>
-    <el-button style="position: relative" type="primary" v-on:click="addshoppinglist">加清单</el-button>
+
+
 </div>
 
 </body>
@@ -134,7 +159,9 @@
         data() {
             return {
                 shoppinglists: [],
-                curIndex: 0
+                curIndex: 0,
+                dialogImageUrl:'',
+                dialogVisible:false
             }
         },
         methods: {
@@ -180,7 +207,7 @@
             getitemlists: function (list_id) {
                 let that = this
                 that.httpget('/item/list', {'list_id': list_id}).done(function (data) {
-                    that.shoppinglists[that.curIndex] = data.result
+                    that.shoppinglists[that.curIndex].items = data.result
                 })
             },
             deleteshoppinglist: function (list_id) {
@@ -191,15 +218,14 @@
             },
             deleteitem: function (item_id, list_id) {
                 console.log(item_id, list_id)
-                if (item_id==null){
-
-                }
+                let that = this
                 that.httpget('/item/delete', {'item_id': item_id}).done(function (data) {
                     that.getitemlists(list_id)
                 })
             },
             additem: function (list_id) {
                 let that = this
+                console.log(that.curIndex, that.shoppinglists[that.curIndex])
                 if (that.shoppinglists[that.curIndex].items == null) {
                     that.shoppinglists[that.curIndex].items = [{
                         'name': null,
@@ -215,15 +241,54 @@
                         'item_id': null
                     })
                 }
-
             },
             addshoppinglist: function () {
                 let that = this
                 that.httpost('/shoppinglist/save', {'name': null}).done(function (data) {
                     that.getshoppinglists()
                 })
-            }
+            },
+            handleRemove(file, fileList) {
+                let that=this
+                that.shoppinglists[that.curIndex].imagelist=fileList
+                that.saveshoppinglist(that.shoppinglists[that.curIndex])
+            },
+            handlePictureCardPreview(file) {
+                this.dialogImageUrl = file.url;
+                this.dialogVisible = true;
+            },
+            handlePicUploadSuccess(response, file, fileList){
+                let that=this
+                that.shoppinglists[that.curIndex].imagelist= fileList
+                that.saveshoppinglist(that.shoppinglists[that.curIndex])
+            },
+      getSummaries:function(param) {
+        const { columns, data } = param;
+        const sums = [];
+        columns.forEach((column, index) => {
+          if (index === 0) {
+            sums[index] = '总价';
+            return;
+          }
+          console.log(param)
+          const values = data.map(item => Number(item[column.property]));
+          if (!values.every(value => isNaN(value))) {
+            sums[index] = values.reduce((prev, curr) => {
+              const value = Number(curr);
+              if (!isNaN(value)) {
+                return prev + curr;
+              } else {
+                return prev;
+              }
+            }, 0);
+            sums[index] += ' 元';
+          } else {
+            sums[index] = 'N/A';
+          }
+        });
 
+        return sums;
+      }
         }
     };
     let Ctor = Vue.extend(Main);
