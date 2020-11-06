@@ -1,12 +1,17 @@
 # -*- coding:utf-8 -*-
 __author__ = 'yishunxin'
 
-# 线上数据库
+# 本地数据库
 HOST = '127.0.0.1'
 PORT = 3306
 USER = 'jdjgq_user'
 PASSWD = 'jdjgq_user_123!'
 DB = 'jdjgq'
+
+#线上
+HOST = '182.61.51.31'
+USER = 'shekinah'
+PASSWD = 'shekinah@365'
 
 CHARSET = 'utf8'
 # sqlalchemy 配置 看下面的链接
