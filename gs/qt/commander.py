@@ -1,7 +1,34 @@
 # -*-coding:utf-8-*-
-import Tkinter as tk
+from Tkinter import Frame
 import json
 import os
+
+
+class TFrame(Frame):
+	def __int__(self, master=None):
+		Frame.__init__(self, master)
+		self.do_init()
+		self.load()
+
+	def do_init(self):
+		pass
+
+	def load(self):
+		pass
+
+
+class MainWindow(TFrame):
+
+	def load(self):
+		self.config()
+	pass
+
+
+class LeftFrame(Frame):
+	def __init__(self, master=None):
+		Frame.__init__(self, master)
+
+
 def enter():
 	cur_index = 0
 	log_cache = []
@@ -92,4 +119,5 @@ def enter():
 
 
 if __name__ == '__main__':
-	enter()
+	a = MainWindow()
+	a.mainloop()
