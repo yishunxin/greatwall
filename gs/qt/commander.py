@@ -1,32 +1,7 @@
 # -*-coding:utf-8-*-
-from Tkinter import Frame
+import Tkinter as tk
 import json
 import os
-
-
-class TFrame(Frame):
-	def __int__(self, master=None):
-		Frame.__init__(self, master)
-		self.do_init()
-		self.load()
-
-	def do_init(self):
-		pass
-
-	def load(self):
-		pass
-
-
-class MainWindow(TFrame):
-
-	def load(self):
-		self.config()
-	pass
-
-
-class LeftFrame(Frame):
-	def __init__(self, master=None):
-		Frame.__init__(self, master)
 
 
 def enter():
@@ -118,6 +93,80 @@ def enter():
 	pass
 
 
+class MainWindow(tk.Tk):
+	def __init__(self, screenName=None, baseName=None, className='Tk',
+				 useTk=1, sync=0, use=None):
+		tk.Tk.__init__(self, screenName=screenName, baseName=baseName, className=className,
+					   useTk=useTk, sync=sync, use=use)
+		self.do_init()
+
+	def do_init(self):
+		self.geometry('800x500')
+		# 两栏，满填充
+
+		self.rowconfigure(0, weight=1)
+		self.grid_columnconfigure(0, weight=1)
+		self.grid_columnconfigure(1, weight=1)
+		left_frame = LeftFrame(master=self)
+		right_frame = RightFrame(master=self)
+
+class Frame(tk.Frame):
+	def __init__(self, master=None):
+		self.master = master
+		tk.Frame.__init__(self, master)
+		self.do_init()
+		self.create_widget()
+
+	def do_init(self):
+		pass
+	def create_widget(self):
+		pass
+
+class LeftFrame(Frame):
+	def do_init(self):
+		# 满填充
+		self.grid(sticky=tk.N + tk.S + tk.E + tk.W)
+		self.config(bg='red')
+		self.grid(row=0, column=0)
+
+		# 设置自身的网格布局
+		self.grid_columnconfigure(0,weight=1)
+		self.rowconfigure(1,weight=20)
+		self.rowconfigure(0,weight=0)
+		self.rowconfigure(2,weight=1)
+
+	def create_widget(self):
+		self.btn_add = tk.Button(self, text=u'添加', command=self.insert)
+		# self.btn_add.grid(row=0,column=0,sticky='e')
+
+		self.lb = tk.Listbox(self, font=u'Consolas 10',width=1)
+		self.lb.grid(row=1,column=0,sticky='wens')
+
+		self.label_desc = tk.Label(self,width=1)
+		self.label_desc.grid(row=2,column=0,sticky='wens')
+		print self.btn_add['width']
+	def insert(self):
+		cmd = self.entry1.get()
+		cmd_info.append([cmd])
+		lb.insert(tk.END, cmd)
+
+class RightFrame(Frame):
+	def do_init(self):
+		self.config(bg='blue')
+		# 满填充
+		self.grid(sticky=tk.N + tk.S + tk.E + tk.W)
+		self.grid(row=0, column=1)
+
+		# 设置自身的网格布局
+		self.grid_columnconfigure(0,weight=1)
+	def create_widget(self):
+		self.comp_text = tk.Text(self, bg='#F7F7F7', relief='ridge', state=tk.DISABLED,
+						font=u'Consolas 11',width=1)
+		self.comp_text.grid(row=0,column=0,sticky='nesw')
+
+
 if __name__ == '__main__':
-	a = MainWindow()
-	a.mainloop()
+	mw = MainWindow()
+
+
+	mw.mainloop()
