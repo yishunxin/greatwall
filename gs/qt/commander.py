@@ -93,6 +93,7 @@ def enter():
 	pass
 
 
+
 class MainWindow(tk.Tk):
 	def __init__(self, screenName=None, baseName=None, className='Tk',
 				 useTk=1, sync=0, use=None):
@@ -110,6 +111,9 @@ class MainWindow(tk.Tk):
 		left_frame = LeftFrame(master=self)
 		right_frame = RightFrame(master=self)
 
+		mv = self
+
+
 class Frame(tk.Frame):
 	def __init__(self, master=None):
 		self.master = master
@@ -119,8 +123,10 @@ class Frame(tk.Frame):
 
 	def do_init(self):
 		pass
+
 	def create_widget(self):
 		pass
+
 
 class LeftFrame(Frame):
 	def do_init(self):
@@ -130,25 +136,58 @@ class LeftFrame(Frame):
 		self.grid(row=0, column=0)
 
 		# 设置自身的网格布局
-		self.grid_columnconfigure(0,weight=1)
-		self.rowconfigure(1,weight=20)
-		self.rowconfigure(0,weight=0)
-		self.rowconfigure(2,weight=1)
+		self.grid_columnconfigure(0, weight=1)
+		self.rowconfigure(1, weight=20)
+		self.rowconfigure(0, weight=0)
+		self.rowconfigure(2, weight=1)
+
+		self.cmd_info = []
 
 	def create_widget(self):
 		self.btn_add = tk.Button(self, text=u'添加', command=self.insert)
-		# self.btn_add.grid(row=0,column=0,sticky='e')
+		# todo 按钮会占用地方
+		self.btn_add.grid(row=0, column=0, sticky='e')
 
-		self.lb = tk.Listbox(self, font=u'Consolas 10',width=1)
-		self.lb.grid(row=1,column=0,sticky='wens')
+		self.lb = tk.Listbox(self, font=u'Consolas 10', width=1)
+		self.lb.grid(row=1, column=0, sticky='wens')
+		with open('commander.json', 'r') as f:
+			self.cmd_info = json.load(f)
+		for item in self.cmd_info:
+			self.lb.insert(tk.END, item[0])
 
-		self.label_desc = tk.Label(self,width=1)
-		self.label_desc.grid(row=2,column=0,sticky='wens')
-		print self.btn_add['width']
+		self.label_desc = tk.Label(self, width=1)
+		self.label_desc.grid(row=2, column=0, sticky='wens')
+
 	def insert(self):
 		cmd = self.entry1.get()
-		cmd_info.append([cmd])
-		lb.insert(tk.END, cmd)
+		self.cmd_info.append([cmd])
+		self.lb.insert(tk.END, cmd)
+
+	def delete(self):
+		index = self.lb.curselection()[0]
+		self.lb.delete(index)
+		self.cmd_info.pop(index)
+		if index > 0:
+			self.lb.select_set(index - 1)
+		else:
+			self.lb.select_set(0)
+
+	def run_cmd(self, e):
+		index = e.widget.curselection()[0]
+		comp_text['state'] = tk.NORMAL
+		comp_text.insert(tk.END, '>>>' + self.cmd_info[index][0] + '\n')
+		log_cache.append('>>>' + self.cmd_info[index][0] + '\n')
+		if see_end.get():
+			comp_text.see(tk.END)
+		comp_text['state'] = tk.DISABLED
+		cmd_output = os.popen(cmd_info[index][0].encode('utf8'))
+		comp_text['state'] = tk.NORMAL
+		output = cmd_output.read()
+		comp_text.insert(tk.END, output + '\n')
+		log_cache.append(output + '\n')
+		if see_end.get():
+			comp_text.see(tk.END)
+		comp_text['state'] = tk.DISABLED
 
 class RightFrame(Frame):
 	def do_init(self):
@@ -158,15 +197,15 @@ class RightFrame(Frame):
 		self.grid(row=0, column=1)
 
 		# 设置自身的网格布局
-		self.grid_columnconfigure(0,weight=1)
+		self.grid_columnconfigure(0, weight=50)
+
 	def create_widget(self):
 		self.comp_text = tk.Text(self, bg='#F7F7F7', relief='ridge', state=tk.DISABLED,
-						font=u'Consolas 11',width=1)
-		self.comp_text.grid(row=0,column=0,sticky='nesw')
+								 font=u'Consolas 11', width=1)
+		self.comp_text.grid(row=0, column=0, sticky='nesw')
 
 
 if __name__ == '__main__':
 	mw = MainWindow()
-
 
 	mw.mainloop()
