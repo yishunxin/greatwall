@@ -1,11 +1,25 @@
-class A():
-    def p(self):
-        print (1)
-    a = 1
-    a1 =2
-class B(A):
-    b = 1
-    b1 = 2
+class A:
+	def __init__(self):
+		self.a = 1
+	def diaoc(self):
+		pass
 
-bb = B()
-print (bb)
+class B(A):
+	def __init__(self):
+		A.__init__(self)
+		self.master = A
+
+	def do(self):
+
+		pass
+
+
+class C(A):
+	def __init__(self):
+		A.__init__(self)
+		self.master = A
+
+
+while raw_input() != 'q':
+
+	print 1
