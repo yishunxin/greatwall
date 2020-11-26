@@ -22,7 +22,6 @@ class MainWindow(tk.Tk):
 		self.grid_columnconfigure(1, weight=1, minsize=400)
 		self.right_frame = RightFrame(master=self)
 		self.left_frame = LeftFrame(master=self)
-
 	def destroy(self):
 		print 'quit'
 		with open('commander.json', 'w') as f:
@@ -55,16 +54,15 @@ class LeftFrame(Frame):
 
 		# 设置自身的网格布局
 		self.grid_columnconfigure(0, weight=1)
-		self.rowconfigure(1, weight=20)
 		self.rowconfigure(0, weight=0)
-		self.rowconfigure(2, weight=1)
+		self.rowconfigure(1, weight=10)
+		self.rowconfigure(2, weight=3)
 
 		self.cmd_info = []
 		self.log_cache = []
 
 	def create_widget(self):
 		self.btn_add = tk.Button(self, text=u'添加', command=self.insert)
-		# todo 按钮会占用地方，想办法怎么解决
 		self.btn_add.grid(row=0, column=0, sticky='e')
 
 		self.lb = tk.Listbox(self, font=u'Consolas 10', width=1)
@@ -78,8 +76,12 @@ class LeftFrame(Frame):
 		for item in self.cmd_info:
 			self.lb.insert(tk.END, item['name'])
 		self.lb.selection_set(0)
-		self.label_desc = tk.Label(self, width=1)
+		self.label_desc = tk.Label(self,font=u'Consolas 11',anchor='nw',text=self.cmd_info[0].get('value') if self.cmd_info else None,justify=tk.LEFT)
 		self.label_desc.grid(row=2, column=0, sticky='wens')
+		self.label_desc.bind('<Configure>',self.update_label_desc_wraplength)
+
+	def update_label_desc_wraplength(self,e):
+		self.label_desc.config(wraplength=self.label_desc.winfo_width())
 
 	def update_desc(self, e):
 		select  = self.lb.curselection()
@@ -97,7 +99,6 @@ class LeftFrame(Frame):
 
 	def delete_cmd(self, e):
 		select = self.lb.curselection()
-		print select
 		if not select:
 			return
 		index = select[0]
