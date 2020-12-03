@@ -187,7 +187,7 @@ class LeftFrame(Frame):
 				self.master.right_frame.comp_text.see(tk.END)
 			self.master.right_frame.comp_text['state'] = tk.NORMAL
 			self.master.right_frame.comp_text.insert(tk.END, line)
-			self.log_cache.append(line)
+			self.log_cache.append(line.encode('utf8'))
 			self.master.right_frame.comp_text['state'] = tk.DISABLED
 			if self.master.right_frame.see_end.get():
 				self.master.right_frame.comp_text.see(tk.END)
@@ -215,10 +215,11 @@ class RightFrame(Frame):
 		btn_clear = Button(self, text=u'清空', command=self.clear_output)
 		btn_clear.grid(row=0, column=1, sticky='e')
 		self.comp_text = tk.Text(self, bg='#F7F7F7', relief='ridge', state=tk.DISABLED,
-								 font=u'Consolas 11', width=1)
+								 font=u'Consolas 8', width=1)
 		self.comp_text.grid(row=1, column=0, sticky='nesw', columnspan=2)
-		text_scroll = tk.Scrollbar(self.comp_text)
-		text_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+		text_scroll = tk.Scrollbar(self)
+		# text_scroll.pack(side=tk.RIGHT, fill=tk.Y)
+		text_scroll.grid(row=1,column=3,sticky='ns')
 		text_scroll.config(command=self.comp_text.yview)
 		self.comp_text.config(yscrollcommand=text_scroll.set)
 
