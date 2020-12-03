@@ -2,6 +2,7 @@
 import Tkinter as tk
 import json
 import os
+import tkFont
 
 
 class MainWindow(tk.Tk):
@@ -22,6 +23,7 @@ class MainWindow(tk.Tk):
 		self.grid_columnconfigure(1, weight=1, minsize=400)
 		self.right_frame = RightFrame(master=self)
 		self.left_frame = LeftFrame(master=self)
+
 	def destroy(self):
 		print 'quit'
 		with open('commander.json', 'w') as f:
@@ -45,13 +47,28 @@ class Frame(tk.Frame):
 		pass
 
 
+class Button(tk.Button):
+	def __init__(self, master=None, cnf={}, **kw):
+		if 'font' not in kw:
+			font = tkFont.Font(size=10)
+			kw['font'] = font
+		tk.Button.__init__(self, master=master, cnf=cnf, **kw)
+
+
+class Checkbutton(tk.Checkbutton):
+	def __init__(self, master=None, cnf={}, **kw):
+		if 'font' not in kw:
+			font = tkFont.Font(size=10)
+			kw['font'] = font
+		tk.Checkbutton.__init__(self, master=master, cnf=cnf, **kw)
+
+
 class LeftFrame(Frame):
 	def do_init(self):
 		# 满填充
 		self.grid(sticky=tk.N + tk.S + tk.E + tk.W)
-		self.config(bg='red')
 		self.grid(row=0, column=0)
-
+		self.config(padx=10, pady=10)
 		# 设置自身的网格布局
 		self.grid_columnconfigure(0, weight=1)
 		self.rowconfigure(0, weight=0)
@@ -62,7 +79,7 @@ class LeftFrame(Frame):
 		self.log_cache = []
 
 	def create_widget(self):
-		self.btn_add = tk.Button(self, text=u'添加', command=self.insert)
+		self.btn_add = Button(self, text=u'添加', command=self.insert)
 		self.btn_add.grid(row=0, column=0, sticky='e')
 
 		self.lb = tk.Listbox(self, font=u'Consolas 10', width=1)
@@ -71,31 +88,51 @@ class LeftFrame(Frame):
 		self.lb.bind('<Button-1>', self.update_desc)
 		self.lb.bind('<KeyRelease-Delete>', self.delete_cmd)
 		self.lb.bind('<KeyRelease-Return>', self.run_cmd)
+		self.lb.bind('<KeyRelease-space>', self.insert)
 		with open('commander.json', 'r') as f:
 			self.cmd_info = json.load(f)
 		for item in self.cmd_info:
 			self.lb.insert(tk.END, item['name'])
 		self.lb.selection_set(0)
-		self.label_desc = tk.Label(self,font=u'Consolas 11',anchor='nw',text=self.cmd_info[0].get('value') if self.cmd_info else None,justify=tk.LEFT)
+		self.label_desc = tk.Label(self, font=u'Consolas 11', anchor='nw', width=1,
+								   text=self.cmd_info[0].get('value') if self.cmd_info else None, justify=tk.LEFT)
 		self.label_desc.grid(row=2, column=0, sticky='wens')
-		self.label_desc.bind('<Configure>',self.update_label_desc_wraplength)
+		self.label_desc.bind('<Configure>', self.update_label_desc_wraplength)
 
-	def update_label_desc_wraplength(self,e):
+	def update_label_desc_wraplength(self, e):
 		self.label_desc.config(wraplength=self.label_desc.winfo_width())
 
 	def update_desc(self, e):
-		select  = self.lb.curselection()
+		select = self.lb.curselection()
 		if not select:
 			return
 		index = select[0]
 		self.label_desc.config(text=self.cmd_info[index]['value'])
 
-	def insert(self):
-		FloatWindow(callback=self.finish_insert)
+	def insert(self, e=None):
+		if e:
+			select = self.lb.curselection()
+			if not select:
+				return
+			index = select[0]
+			form = self.cmd_info[index]
+		else:
+			form = {}
+			index=None
+		FloatWindow(callback=self.finish_insert, master=self.winfo_toplevel(), form=form,index=index)
 
-	def finish_insert(self, form_data):
-		self.cmd_info.append(form_data)
-		self.lb.insert(tk.END, form_data['name'])
+	def finish_insert(self, form_data, **kwargs):
+		if kwargs['index'] is not None:
+			self.cmd_info[kwargs['index']] = form_data
+			self.update_lb()
+		else:
+			self.cmd_info.append(form_data)
+			self.lb.insert(tk.END, form_data['name'])
+
+	def update_lb(self):
+		self.lb.delete(0,tk.END)
+		for item in self.cmd_info:
+			self.lb.insert(tk.END, item['name'])
 
 	def delete_cmd(self, e):
 		select = self.lb.curselection()
@@ -134,8 +171,8 @@ class LeftFrame(Frame):
 
 class RightFrame(Frame):
 	def do_init(self):
-		self.config(bg='blue')
 		# 满填充
+		self.config(padx=10, pady=10)
 		self.grid(sticky=tk.N + tk.S + tk.E + tk.W)
 		self.grid(row=0, column=1)
 		self.see_end = tk.IntVar(value=0)
@@ -147,7 +184,7 @@ class RightFrame(Frame):
 		self.create_widget()
 
 	def create_widget(self):
-		btn_clear = tk.Button(self, text=u'清空', command=self.clear_output)
+		btn_clear = Button(self, text=u'清空', command=self.clear_output)
 		btn_clear.grid(row=0, column=1, sticky='e')
 		self.comp_text = tk.Text(self, bg='#F7F7F7', relief='ridge', state=tk.DISABLED,
 								 font=u'Consolas 11', width=1)
@@ -157,7 +194,7 @@ class RightFrame(Frame):
 		text_scroll.config(command=self.comp_text.yview)
 		self.comp_text.config(yscrollcommand=text_scroll.set)
 
-		cbtn_refresh = tk.Checkbutton(self, text=u'自动刷新', variable=self.see_end, onvalue=1, offvalue=0)
+		cbtn_refresh = Checkbutton(self, text=u'自动刷新', variable=self.see_end, onvalue=1, offvalue=0)
 		cbtn_refresh.grid(row=0, column=0, sticky='e')
 
 	def clear_output(self):
@@ -168,33 +205,41 @@ class RightFrame(Frame):
 
 class FloatWindow(tk.Tk):
 	def __init__(self, screenName=None, baseName=None, className='Tk',
-				 useTk=1, sync=0, use=None, master=None, callback=None):
+				 useTk=1, sync=0, use=None, master=None, callback=None, form={}, **cbkwargs):
 		tk.Tk.__init__(self, screenName=screenName, baseName=baseName, className=className,
 					   useTk=useTk, sync=sync, use=use)
+		self.geometry('300x100+{}+{}'.format(master.winfo_x() + 250, master.winfo_y() + 200))
 		self.callback = callback
-		self.form = {}
+		self.form = form
+		self.cbkwargs = cbkwargs
 		self.do_init()
 
 	def do_init(self):
 		self.create_widget()
+		self.columnconfigure(0, weight=1)
+		self.columnconfigure(1, weight=5)
+		self.configure(pady=10, padx=10)
 		pass
 
 	def create_widget(self):
 		label_1 = tk.Label(self, text=u'脚本名称')
 		label_1.grid(row=0, column=0)
 		self.input_1 = tk.Entry(self)
-		self.input_1.grid(row=0, column=1)
+		self.input_1.grid(row=0, column=1, sticky='we')
 		label_2 = tk.Label(self, text=u'脚本内容')
 		label_2.grid(row=1, column=0)
 		self.input_2 = tk.Entry(self)
-		self.input_2.grid(row=1, column=1)
+		self.input_2.grid(row=1, column=1, sticky='we')
 		btn_queding = tk.Button(self, text=u'确定', command=self.queding)
-		btn_queding.grid(row=2, column=0, columnspan=2)
+		btn_queding.grid(row=2, column=0, columnspan=2, pady=10)
+		if self.form:
+			self.input_1.insert(0,self.form.get('name', ''))
+			self.input_2.insert(0,self.form.get('value', ''))
 
 	def queding(self):
 		self.form['name'] = self.input_1.get()
 		self.form['value'] = self.input_2.get()
-		self.callback(self.form)
+		self.callback(self.form, **self.cbkwargs)
 		self.destroy()
 		pass
 
