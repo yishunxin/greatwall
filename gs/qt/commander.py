@@ -2,7 +2,11 @@
 import Tkinter as tk
 import json
 import os
+import subprocess
+import threading
 import tkFont
+
+import queue
 
 
 class MainWindow(tk.Tk):
@@ -23,6 +27,16 @@ class MainWindow(tk.Tk):
 		self.grid_columnconfigure(1, weight=1, minsize=400)
 		self.right_frame = RightFrame(master=self)
 		self.left_frame = LeftFrame(master=self)
+
+		# 起一个线程管理，window多进程有问题 https://www.cnblogs.com/leijiangtao/p/11927235.html
+		self.cmd_queue = queue.Queue()
+		p = threading.Thread(target=self.cmd_worker)
+		p.start()
+
+	def cmd_worker(self):
+		while True:
+			index = self.cmd_queue.get(block=True)
+			self.left_frame.execute_cmd(index)
 
 	def destroy(self):
 		print 'quit'
@@ -154,6 +168,9 @@ class LeftFrame(Frame):
 		if not select:
 			return
 		index = select[0]
+		self.master.cmd_queue.put(index)
+
+	def execute_cmd(self, index):
 		comp_text = self.master.right_frame.comp_text
 		see_end = self.master.right_frame.see_end
 		comp_text['state'] = tk.NORMAL
@@ -162,14 +179,22 @@ class LeftFrame(Frame):
 		if see_end.get():
 			comp_text.see(tk.END)
 		comp_text['state'] = tk.DISABLED
-		cmd_output = os.popen(self.cmd_info[index]['value'].encode('utf8'))
-		comp_text['state'] = tk.NORMAL
-		output = cmd_output.read()
-		comp_text.insert(tk.END, output + '\n')
-		self.log_cache.append(output + '\n')
-		if see_end.get():
-			comp_text.see(tk.END)
-		comp_text['state'] = tk.DISABLED
+		screenData = subprocess.Popen(self.cmd_info[index]['value'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+									  shell=True)
+		while True:
+			line = screenData.stdout.readline().decode('gbk').strip("b'")
+			if self.master.right_frame.see_end.get():
+				self.master.right_frame.comp_text.see(tk.END)
+			self.master.right_frame.comp_text['state'] = tk.NORMAL
+			self.master.right_frame.comp_text.insert(tk.END, line)
+			self.log_cache.append(line)
+			self.master.right_frame.comp_text['state'] = tk.DISABLED
+			if self.master.right_frame.see_end.get():
+				self.master.right_frame.comp_text.see(tk.END)
+			if line == b'' or subprocess.Popen.poll(screenData) == 0:
+				screenData.stdout.close()
+				break
+			pass
 
 
 class RightFrame(Frame):
@@ -178,7 +203,7 @@ class RightFrame(Frame):
 		self.config(padx=10, pady=10)
 		self.grid(sticky=tk.N + tk.S + tk.E + tk.W)
 		self.grid(row=0, column=1)
-		self.see_end = tk.IntVar(value=0)
+		self.see_end = tk.IntVar(value=1)
 		# 设置自身的网格布局
 		self.grid_rowconfigure(0, weight=0)
 		self.grid_rowconfigure(1, weight=50)
