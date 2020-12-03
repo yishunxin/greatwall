@@ -89,6 +89,9 @@ class LeftFrame(Frame):
 		self.lb.bind('<KeyRelease-Delete>', self.delete_cmd)
 		self.lb.bind('<KeyRelease-Return>', self.run_cmd)
 		self.lb.bind('<KeyRelease-space>', self.insert)
+		if not os.path.exists('commander.json'):
+			with open('commander.json', 'w') as f:
+				json.dump([], f)
 		with open('commander.json', 'r') as f:
 			self.cmd_info = json.load(f)
 		for item in self.cmd_info:
@@ -118,8 +121,8 @@ class LeftFrame(Frame):
 			form = self.cmd_info[index]
 		else:
 			form = {}
-			index=None
-		FloatWindow(callback=self.finish_insert, master=self.winfo_toplevel(), form=form,index=index)
+			index = None
+		FloatWindow(callback=self.finish_insert, master=self.winfo_toplevel(), form=form, index=index)
 
 	def finish_insert(self, form_data, **kwargs):
 		if kwargs['index'] is not None:
@@ -130,7 +133,7 @@ class LeftFrame(Frame):
 			self.lb.insert(tk.END, form_data['name'])
 
 	def update_lb(self):
-		self.lb.delete(0,tk.END)
+		self.lb.delete(0, tk.END)
 		for item in self.cmd_info:
 			self.lb.insert(tk.END, item['name'])
 
@@ -233,8 +236,8 @@ class FloatWindow(tk.Tk):
 		btn_queding = tk.Button(self, text=u'确定', command=self.queding)
 		btn_queding.grid(row=2, column=0, columnspan=2, pady=10)
 		if self.form:
-			self.input_1.insert(0,self.form.get('name', ''))
-			self.input_2.insert(0,self.form.get('value', ''))
+			self.input_1.insert(0, self.form.get('name', ''))
+			self.input_2.insert(0, self.form.get('value', ''))
 
 	def queding(self):
 		self.form['name'] = self.input_1.get()
