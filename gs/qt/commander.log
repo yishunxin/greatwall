@@ -1,0 +1,204 @@
+>>>chdir C:\work\g58kr\programer\source\trunk\server && svn update
+Updating '.':
+
+Fetching external item into 'res20200417\maps':
+External at revision 626776.
+
+
+Fetching external item into 'script_kr20200113\combat':
+External at revision 626776.
+
+
+Fetching external item into 'script_kr20200113\com':
+External at revision 626777.
+
+
+Fetching external item into 'script_kr20200417_kr\com':
+External at revision 626777.
+
+
+Fetching external item into 'script20200113\combat':
+External at revision 626777.
+
+
+Fetching external item into 'script20200113\com':
+External at revision 626777.
+
+
+Fetching external item into 'script20200113\utils\rpyc':
+External at revision 626777.
+
+
+Fetching external item into 'script_kr20200417\combat':
+External at revision 626777.
+
+
+Fetching external item into 'script_kr20200417\com':
+External at revision 626777.
+
+
+Fetching external item into 'res20200113\maps':
+External at revision 626777.
+
+
+Fetching external item into 'script20200417\combat':
+External at revision 626777.
+
+
+Fetching external item into 'script20200417\com':
+External at revision 626777.
+
+
+Fetching external item into 'script20200417\utils\rpyc':
+External at revision 626777.
+
+
+Fetching external item into 'script_kr20200113_kr\com':
+External at revision 626777.
+
+At revision 626776.
+
+>>>chdir C:\work\g58kr\programer\source\trunk\client && cd script20200113 && svn update && cd .. && cd script_kr20200113 && svn update && cd .. && cd script_kr20200113_kr && svn update && cd .. && cd res20200113 && svn update && cd .. && cd res_kr20200113 && svn update && cd .. && cd res_kr20200113_kr && svn update && cd .. && cd script20200417 && svn update && cd .. && cd script_kr20200417 && svn update && cd .. && cd script_kr20200417_kr && svn update && cd .. && cd res20200417 && svn update && cd .. && cd res_kr20200417 && svn update && cd .. && cd res_kr20200417_kr && svn update && cd .. && svn update
+Updating '.':
+At revision 626777.
+Updating '.':
+At revision 626777.
+Updating '.':
+At revision 626777.
+Updating '.':
+At revision 626777.
+Updating '.':
+At revision 626777.
+Updating '.':
+At revision 626777.
+Updating '.':
+At revision 626777.
+Updating '.':
+At revision 626777.
+Updating '.':
+At revision 626777.
+Updating '.':
+At revision 626777.
+Updating '.':
+At revision 626777.
+Updating '.':
+At revision 626777.
+Updating '.':
+At revision 626777.
+
+>>>chdir C:\work\g58kr\programer\source\trunk\server && svn update
+Updating '.':
+
+Fetching external item into 'script_kr20200417\combat':
+External at revision 626777.
+
+
+Fetching external item into 'script_kr20200417\com':
+External at revision 626777.
+
+
+Fetching external item into 'res20200113\maps':
+External at revision 626777.
+
+
+Fetching external item into 'script20200417\combat':
+External at revision 626777.
+
+
+Fetching external item into 'script20200417\com':
+External at revision 626777.
+
+
+Fetching external item into 'script20200417\utils\rpyc':
+External at revision 626777.
+
+
+Fetching external item into 'script_kr20200113_kr\com':
+External at revision 626777.
+
+
+Fetching external item into 'res20200417\maps':
+External at revision 626777.
+
+
+Fetching external item into 'script_kr20200113\combat':
+External at revision 626777.
+
+
+Fetching external item into 'script_kr20200113\com':
+External at revision 626777.
+
+
+Fetching external item into 'script_kr20200417_kr\com':
+External at revision 626777.
+
+
+Fetching external item into 'script20200113\combat':
+External at revision 626777.
+
+
+Fetching external item into 'script20200113\com':
+External at revision 626777.
+
+
+Fetching external item into 'script20200113\utils\rpyc':
+External at revision 626777.
+
+At revision 626777.
+
+>>>start D:\work\g58\programer\release\20200914\client\x64Client\client.exe %1
+
+>>>start D:\work\g58\programer\release\20200914\client\x64Client\client.exe
+
+>>>start D:\work\g58\programer\release\20200914\client\run_old.bat
+
+>>>chdir D:\work\g58\programer\release\20200914\client && start x64Client\client.exe
+
+>>>chdir D:/work/g58/programer/release/20200914/client && start x64Client/client.exe
+
+>>>chdir D:/work/g58/programer/release/20200914/client && start run_old.bat
+
+>>>chdir D:/work/g58/programer/release/20200914/client && start run_old.bat
+
+>>>chdir D:/work/g58/programer/release/20200914/client && start run_old.bat
+
+>>>chdir "D:\work\g58\programer\release\20200914\client" && start run_old.bat
+
+>>>D: && chdir D:\work\g58\programer\release\20200914\client && start x64Client\client.exe
+
+>>>D: && chdir D:\work\g58\programer\release\20200914\client && start x64Client\client.exe
+>>>D: && chdir D:\work\g58\programer\release\20200914\client && start x64Client\client.exe
+>>>chdir C:\work\g58kr\programer\source\trunk\client && cd script20200113 && svn update && cd .. && cd script_kr20200113 && svn update && cd .. && cd script_kr20200113_kr && svn update && cd .. && cd res20200113 && svn update && cd .. && cd res_kr20200113 && svn update && cd .. && cd res_kr20200113_kr && svn update && cd .. && cd script20200417 && svn update && cd .. && cd script_kr20200417 && svn update && cd .. && cd script_kr20200417_kr && svn update && cd .. && cd res20200417 && svn update && cd .. && cd res_kr20200417 && svn update && cd .. && cd res_kr20200417_kr && svn update && cd .. && svn update
+Updating '.':
+At revision 629073.
+Updating '.':
+At revision 629073.
+Updating '.':
+At revision 629073.
+Updating '.':
+At revision 629073.
+Updating '.':
+At revision 629073.
+Updating '.':
+At revision 629073.
+Updating '.':
+At revision 629073.
+Updating '.':
+At revision 629073.
+Updating '.':
+At revision 629073.
+Updating '.':
+At revision 629073.
+Updating '.':
+At revision 629074.
+Updating '.':
+At revision 629074.
+Updating '.':
+At revision 629074.
+>>>D: && chdir D:\work\g58\programer\release\20200914\client && start x64Client\client.exe
+>>>D: && chdir D:\work\g58\programer\release\20200914\client && start x64Client\client.exe
+>>>D: && chdir D:\work\g58\programer\release\20200914\client && start x64Client\client.exe
+>>>D: && chdir D:\work\g58\programer\release\20200914\client && start x64Client\client.exe
+>>>echo test
+test
+>>>D: && chdir D:\work\g58\programer\release\20200914\client && start x64Client\client.exe

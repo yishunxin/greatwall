@@ -31,6 +31,7 @@ class MainWindow(tk.Tk):
 		# 起一个线程管理，window多进程有问题 https://www.cnblogs.com/leijiangtao/p/11927235.html
 		self.cmd_queue = queue.Queue()
 		p = threading.Thread(target=self.cmd_worker)
+		p.setDaemon(True)
 		p.start()
 
 	def cmd_worker(self):
@@ -99,7 +100,7 @@ class LeftFrame(Frame):
 		self.lb = tk.Listbox(self, font=u'Consolas 10', width=1)
 		self.lb.grid(row=1, column=0, sticky='wens')
 		self.lb.bind('<Double-Button-1>', self.run_cmd)
-		self.lb.bind('<Button-1>', self.update_desc)
+		self.lb.bind('<<ListboxSelect>>', self.update_desc)
 		self.lb.bind('<KeyRelease-Delete>', self.delete_cmd)
 		self.lb.bind('<KeyRelease-Return>', self.run_cmd)
 		self.lb.bind('<KeyRelease-space>', self.insert)
@@ -116,6 +117,7 @@ class LeftFrame(Frame):
 		self.label_desc.grid(row=2, column=0, sticky='wens')
 		self.label_desc.bind('<Configure>', self.update_label_desc_wraplength)
 
+		print self.lb.event_info()
 	def update_label_desc_wraplength(self, e):
 		self.label_desc.config(wraplength=self.label_desc.winfo_width())
 

@@ -1,14 +1,14 @@
 # -*-coding:utf8-*-
+import threading
+import time
+
 import queue
 
-q = queue.Queue()
-q.put('1')
-q.put('2')
-while True:
-    print 'start'
-    a = q.get(block=True)
-    q.put
-    print a
-    t= raw_input()
-    if t=='q':
-        q.put('2')
+def a():
+    print 1
+    time.sleep(5)
+    print 2
+
+p = threading.Thread(target=a)
+p.start()
+p.
