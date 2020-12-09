@@ -202,3 +202,275 @@ At revision 629074.
 >>>echo test
 test
 >>>D: && chdir D:\work\g58\programer\release\20200914\client && start x64Client\client.exe
+>>>D: && chdir D:\work\g58\programer\release\20200914\client && x64Client\client.exe
+>>>echo test
+test
+>>>echo test
+test
+>>>D: && chdir D:\work\g58\programer\release\20200914\client && x64Client\client.exe
+>>>D: && chdir D:\work\g58\programer\release\20200914\client && start x64Client\client.exe
+>>>echo test
+test
+>>>echo test
+test
+>>>echo off && D: && chdir D:\work\g58\programer\release\20200914\client && start x64Client\client.exe
+>>>echo test
+test
+>>>echo off && echo test
+test
+>>>echo off && echo test
+test
+>>>echo off && echo test
+test
+>>>echo off && echo test
+test
+>>>echo off && echo test
+test
+>>>echo test && exit
+test 
+>>>echo test && exit
+test 
+>>>echo test && exit
+test 
+>>>echo test && exit
+test 
+>>>echo test && exit
+test 
+>>>echo test && exit
+test 
+>>>echo test && exit
+test 
+>>>echo test && exit
+test 
+>>>D: && chdir D:\work\g58\programer\release\20200914\client && start x64Client\client.exe && exit
+>>>echo test && exit
+test 
+>>>echo test && exit
+test 
+>>>echo test \n echo 1
+test \n echo 1
+>>>echo test \n echo 1
+test \n echo 1
+>>>echo test \n echo 1
+test \n echo 1
+>>>echo test \n echo 1
+test \n echo 1
+>>>echo test \n echo 1
+test \n echo 1
+>>>echo test \n echo 1
+test \n echo 1
+>>>echo test \n echo 1
+test \n echo 1
+>>>echo test \n echo 1
+test \n echo 1
+>>>chdir C:\work\g58kr\programer\source\trunk\server && svn update
+Updating '.':
+
+Fetching external item into 'script_kr20200417_kr\com':
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\1344.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\1013812.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\1190.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\1339.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\1341.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\1347.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20490.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20491.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20492.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20493.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20494.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\1343.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\1346.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\2224.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\2228.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20520.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20661.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20662.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20663.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20664.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20665.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20666.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20667.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20668.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20670.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20671.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20672.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20673.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20674.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20675.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20676.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20677.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20683.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_tbreaker\20684.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\1013811.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\1013813.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\1338.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\1340.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\1342.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\1345.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\2223.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\2227.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\2231.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\3356.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\4363.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\4367.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\4371.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\5355.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\2225.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\2229.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\3354.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\4361.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\4365.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\4369.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\5353.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\2232.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\3357.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\4364.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\4368.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\5352.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\2226.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\2230.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\3355.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\4362.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\4366.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\4370.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\5354.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\6415.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\6419.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\6423.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\6427.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\7498.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\7502.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\7507.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\7512.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\8683.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\8687.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\6414.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\6418.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\6422.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\6426.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\6431.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\7501.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\7506.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\7511.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\7515.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\8686.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\5356.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\6417.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\6421.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\6425.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\6430.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\7500.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\7504.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\7510.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\7514.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\8685.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\6416.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\6420.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\6424.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\6429.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\7499.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\7503.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\7509.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\7513.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\8684.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\8688.py
+D    script_kr20200417_kr\com\data\cdata\message_translation_kr.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\8690.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\8695.py
+U    script_kr20200417_kr\com\data\cdata\chouka_hero_file.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\8689.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\8694.py
+U    script_kr20200417_kr\com\data\cdata\badge_info.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\8693.py
+U    script_kr20200417_kr\com\data\cdata\awake_consume_data.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\8692.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_tbreaker\8696.py
+U    script_kr20200417_kr\com\data\cdata\client_dialogue_no_break.py
+U    script_kr20200417_kr\com\data\cdata\event_content.py
+U    script_kr20200417_kr\com\data\cdata\huodong_main.py
+U    script_kr20200417_kr\com\data\cdata\event_condition.py
+U    script_kr20200417_kr\com\data\cdata\home_popo_data.py
+U    script_kr20200417_kr\com\data\cdata\item_store.py
+U    script_kr20200417_kr\com\data\cdata\skin.py
+U    script_kr20200417_kr\com\data\cdata\white_valentine_mission.py
+U    script_kr20200417_kr\com\data\cdata\decorate_data.py
+U    script_kr20200417_kr\com\data\cdata\hero_home_text_data.py
+U    script_kr20200417_kr\com\data\cdata\event_dialogue_no_break.py
+U    script_kr20200417_kr\com\data\cdata\huodong_pid.py
+A    script_kr20200417_kr\com\data\cdata\message_translation_kr.py
+U    script_kr20200417_kr\com\data\cdata\story_clue_info.py
+U    script_kr20200417_kr\com\data\cdata\item_data.py
+U    script_kr20200417_kr\com\data\cdata\rule_info_data.py
+U    script_kr20200417_kr\com\data\cdata\title_info.py
+U    script_kr20200417_kr\com\data\cdata\mission_dialogue.py
+U    script_kr20200417_kr\com\data\cdata\story_target.py
+Updated external to revision 630738.
+
+
+Fetching external item into 'script20200113\combat':
+External at revision 630738.
+
+
+Fetching external item into 'script20200113\com':
+External at revision 630738.
+
+
+Fetching external item into 'script20200113\utils\rpyc':
+External at revision 630738.
+
+
+Fetching external item into 'script_kr20200417\combat':
+External at revision 630738.
+
+
+Fetching external item into 'script_kr20200417\com':
+External at revision 630738.
+
+
+Fetching external item into 'res20200113\maps':
+External at revision 630738.
+
+
+Fetching external item into 'script20200417\combat':
+External at revision 630738.
+
+
+Fetching external item into 'script20200417\com':
+External at revision 630738.
+
+
+Fetching external item into 'script20200417\utils\rpyc':
+External at revision 630738.
+
+
+Fetching external item into 'script_kr20200113_kr\com':
+External at revision 630738.
+
+
+Fetching external item into 'res20200417\maps':
+External at revision 630738.
+
+
+Fetching external item into 'script_kr20200113\combat':
+External at revision 630738.
+
+
+Fetching external item into 'script_kr20200113\com':
+External at revision 630738.
+
+At revision 630738.
+>>>ls
+ls' 不是内部或外部命令，也不是可运行的程序
+或批处理文件。
+>>>ls
+ls' 不是内部或外部命令，也不是可运行的程序
+或批处理文件。
+>>>ls
+ls' 不是内部或外部命令，也不是可运行的程序
+或批处理文件。
+>>>ls
+ls' 不是内部或外部命令，也不是可运行的程序
+或批处理文件。
+>>>ls
+ls' 不是内部或外部命令，也不是可运行的程序
+或批处理文件。

@@ -7,6 +7,9 @@ import threading
 import tkFont
 
 import queue
+import logging
+
+logging.basicConfig(filename='test.log', level=logging.DEBUG)
 
 
 class MainWindow(tk.Tk):
@@ -40,7 +43,6 @@ class MainWindow(tk.Tk):
 			self.left_frame.execute_cmd(index)
 
 	def destroy(self):
-		print 'quit'
 		with open('commander.json', 'w') as f:
 			json.dump(self.left_frame.cmd_info, f)
 		with open('commander.log', 'a') as f:
@@ -117,7 +119,6 @@ class LeftFrame(Frame):
 		self.label_desc.grid(row=2, column=0, sticky='wens')
 		self.label_desc.bind('<Configure>', self.update_label_desc_wraplength)
 
-		print self.lb.event_info()
 	def update_label_desc_wraplength(self, e):
 		self.label_desc.config(wraplength=self.label_desc.winfo_width())
 
@@ -173,30 +174,36 @@ class LeftFrame(Frame):
 		self.master.cmd_queue.put(index)
 
 	def execute_cmd(self, index):
-		comp_text = self.master.right_frame.comp_text
-		see_end = self.master.right_frame.see_end
-		comp_text['state'] = tk.NORMAL
-		comp_text.insert(tk.END, '>>>' + self.cmd_info[index]['value'] + '\n')
-		self.log_cache.append('>>>' + self.cmd_info[index]['value'] + '\n')
-		if see_end.get():
-			comp_text.see(tk.END)
-		comp_text['state'] = tk.DISABLED
-		screenData = subprocess.Popen(self.cmd_info[index]['value'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-									  shell=True)
-		while True:
-			line = screenData.stdout.readline().decode('gbk').strip("b'")
-			if self.master.right_frame.see_end.get():
-				self.master.right_frame.comp_text.see(tk.END)
-			self.master.right_frame.comp_text['state'] = tk.NORMAL
-			self.master.right_frame.comp_text.insert(tk.END, line)
-			self.log_cache.append(line.encode('utf8'))
-			self.master.right_frame.comp_text['state'] = tk.DISABLED
-			if self.master.right_frame.see_end.get():
-				self.master.right_frame.comp_text.see(tk.END)
-			if line == b'' or subprocess.Popen.poll(screenData) == 0:
-				screenData.stdout.close()
-				break
-			pass
+		try:
+			comp_text = self.master.right_frame.comp_text
+			see_end = self.master.right_frame.see_end
+			comp_text['state'] = tk.NORMAL
+			comp_text.insert(tk.END, '>>>' + self.cmd_info[index]['value'] + '\n')
+			self.log_cache.append('>>>' + self.cmd_info[index]['value'] + '\n')
+			if see_end.get():
+				comp_text.see(tk.END)
+			comp_text['state'] = tk.DISABLED
+			#TODO 研究一下，为什么stderr使用subprocess.STDOUT 打包后_get_handles方法会报错 WindowsError: [Error 6]
+			screenData = subprocess.Popen(self.cmd_info[index]['value'], stdin=subprocess.PIPE, stdout=subprocess.PIPE,
+										  stderr=subprocess.PIPE,
+										  shell=True)
+			while True:
+				# todo 解决screenData.stdout卡住的问题
+				line = screenData.stdout.readline().decode('gbk').strip("b'")
+				if self.master.right_frame.see_end.get():
+					self.master.right_frame.comp_text.see(tk.END)
+				self.master.right_frame.comp_text['state'] = tk.NORMAL
+				self.master.right_frame.comp_text.insert(tk.END, line)
+				self.log_cache.append(line.encode('utf8'))
+				self.master.right_frame.comp_text['state'] = tk.DISABLED
+				if self.master.right_frame.see_end.get():
+					self.master.right_frame.comp_text.see(tk.END)
+				if line == b'' or subprocess.Popen.poll(screenData) == 0:
+					screenData.stdout.close()
+					break
+				pass
+		except Exception as e:
+			logging.exception(e)
 
 
 class RightFrame(Frame):
@@ -221,7 +228,7 @@ class RightFrame(Frame):
 		self.comp_text.grid(row=1, column=0, sticky='nesw', columnspan=2)
 		text_scroll = tk.Scrollbar(self)
 		# text_scroll.pack(side=tk.RIGHT, fill=tk.Y)
-		text_scroll.grid(row=1,column=3,sticky='ns')
+		text_scroll.grid(row=1, column=3, sticky='ns')
 		text_scroll.config(command=self.comp_text.yview)
 		self.comp_text.config(yscrollcommand=text_scroll.set)
 
