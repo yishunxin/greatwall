@@ -1,8 +1,14 @@
 # -*- coding:utf-8 -*-
+import logging
+import os
 import re
+import threading
+
 import requests
-from bs4 import BeautifulSoup
 import urllib
+
+import thread
+
 from gs.common import cdb
 from gs.sve import app_jdjgq
 from gs.util import mymodel
@@ -11,10 +17,8 @@ cdb.init_flaskdb_jdjgq(app_jdjgq)
 from gs.common.cdb import db_jdjgq
 from gs.model.jdjgq import Music
 
+logger = logging.getLogger("jdjgq")
 def get_music_info():
-    a = requests.get("http://www.jdjgq.com/play/url.php?music=821_822_823_824_825_826_827_828_829_830")
-    soup = BeautifulSoup(a.content, 'lxml')
-    exit()
     base_url = "http://www.jdjgq.com/play/url.php"
     for i in range(0, 4000):
         try:
@@ -41,6 +45,7 @@ def get_music_info():
         except Exception as e:
             print e
 
+
 def process_music_info():
     try:
         music_list = db_jdjgq.session.query(Music).all()
@@ -56,5 +61,40 @@ def process_music_info():
         db_jdjgq.session.rollback()
 
 
+def down_music_thread(music_list):
+    root_path = "F:/music/jdjgq"
+    if not os.path.exists(root_path):
+        os.makedirs(root_path)
+    for music in music_list:
+        try:
+            folder = os.path.join(root_path, music.author, music.album)
+            if not os.path.exists(folder):
+                os.makedirs(folder)
+            music_file = os.path.join(folder,music.name+'.mp3')
+            lrc_file = os.path.join(folder,music.name+'.lrc')
+            lrc_url = "http://www.jdjgq.com/"+'/'.join(music.lrc_url.split('/')[3:])
+            urllib.urlretrieve(music.music_url.encode('utf8'), music_file)
+            urllib.urlretrieve(lrc_url.encode('utf8'),lrc_file)
+            try:
+                db_jdjgq.session.query(Music).filter(Music.m_id==music.m_id).update({Music.status:1})
+                db_jdjgq.session.commit()
+            except Exception as e:
+                logger.exception(e)
+                db_jdjgq.session.rollback()
+        except Exception as e:
+            logger.exception(e)
+            db_jdjgq.session.query(Music).filter(Music.m_id == music.m_id).update({Music.status: 2})
+            db_jdjgq.session.commit()
+
+def start_down():
+    music_list = db_jdjgq.session.query(Music).filter(Music.status=='0').all()
+    logger.info("start,lenth=={}".format(str(len(music_list))))
+    percount = len(music_list)/10
+    for i in range(10):
+        t_music_list = music_list[i*percount:(i+1)*percount]
+        t = threading.Thread(target=down_music_thread, args=(t_music_list,))
+        t.start()
+
+
 if __name__ == '__main__':
-    process_music_info()
+    start_down()

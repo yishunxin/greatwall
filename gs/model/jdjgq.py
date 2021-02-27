@@ -12,4 +12,5 @@ class Music(db.Model):
     music_url = db.Column(db.String)
     lrc_url = db.Column(db.String)
     label = db.Column(db.String)
+    status = db.Column(db.Integer)
 

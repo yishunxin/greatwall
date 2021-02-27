@@ -1,4 +1,6 @@
 # -*- coding:utf-8 -*-
+import traceback
+
 from selenium import webdriver
 
 
@@ -27,5 +29,6 @@ def login():
 
 
 if __name__ == '__main__':
-    login()
-    pass
+    a = u'东莞市艾慕寝室用品有限公司(合并)'
+    a.index()
+
