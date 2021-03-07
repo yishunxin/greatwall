@@ -84,7 +84,8 @@ class Svc(object):
             logging.exception(e)
             db.session.rollback()
             return False
-
+    def shoppinglist_get(self,list_id):
+        return db.session.query(ShoppingList).get(list_id)
     def item_delete(self, item_id=None, list_id=None):
         try:
             q = db.session.query(Item)
@@ -203,6 +204,25 @@ def image_save():
     try:
         t_file = request.files['file']
         t_file.save('images/{}'.format(t_file.filename))
+        return common_json_response(code=0)
+    except Exception as e:
+        logging.exception(e)
+        return render_template('error.html')
+
+@app.route('/shoppinglist/copy', methods=['GET'])
+def shoppinglist_copy():
+    try:
+        list_id = request.args.get("list_id")
+        shoppinglist = Svc().shoppinglist_get(list_id)
+        newshoppinglist = ShoppingList()
+        for key in inspect(ShoppingList).c.keys():
+            if key=='list_id':
+                continue
+            setattr(newshoppinglist,key,getattr(shoppinglist,key))
+
+            pass
+        if not Svc().shopplist_delete(list_id):
+            return render_template('error.html')
         return common_json_response(code=0)
     except Exception as e:
         logging.exception(e)
