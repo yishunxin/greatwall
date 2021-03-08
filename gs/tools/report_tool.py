@@ -4,6 +4,9 @@ import shutil
 
 import openpyxl
 import logging
+
+from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+
 logging.basicConfig(filename='./data/tools.log.%s' % datetime.datetime.now().year,format='%(asctime)s - %(filename)s[line:%(lineno)d] - %(levelname)s: %(message)s')
 def load_config():
     with open('./data/config.txt', 'r',encoding='utf8') as f:
@@ -146,23 +149,53 @@ def new_run():
     folder = './{}-{}'.format(date[0],date[1])
     small_excels = os.listdir(folder)
     small_excels_file_dict = {item:item.split('.')[0].split('-') for item in small_excels}
-
-
-
     # load 统计表
     wb_total = openpyxl.load_workbook(old_name)
-    print (wb_total.worksheets)
     sheet_total = wb_total.worksheets[0]
+    start_index = index = sheet_total.max_row+1
+
+    # style define
+    font_bold = Font('微软雅黑', size=10, bold=True)
+    align = Alignment(horizontal='center', vertical='center', wrap_text=False)
+    font_normal = Font('微软雅黑', size=11, bold=False)
+    fill_blue  = PatternFill(fill_type = 'solid',start_color='00FDFF')
+    side = Side(border_style='thin',color='000000')
+    border = Border(left=side,right=side,top=side,bottom=side)
+    head_fill_dict = {}
+    for i in range(1,18):
+        head_fill_dict[i] = PatternFill(fill_type = 'solid',start_color='00FDFF')
+    head_fill_dict[18] = PatternFill(fill_type = 'solid',start_color='FF99CC')
+    head_fill_dict[19] = PatternFill(fill_type = 'solid',start_color='FF00FF')
+    head_fill_dict[20] = PatternFill(fill_type = 'solid',start_color='FF8080')
+    head_fill_dict[21] = PatternFill(fill_type = 'solid',start_color='FF0000')
+    head_fill_dict[22] = PatternFill(fill_type = 'solid',start_color='FF99CC')
+    head_fill_dict[23] = PatternFill(fill_type = 'solid',start_color='FF00FF')
+    head_fill_dict[24] = PatternFill(fill_type = 'solid',start_color='FF8080')
+    head_fill_dict[25] = PatternFill(fill_type = 'solid',start_color='FF0000')
+    head_fill_dict[26] = PatternFill(fill_type = 'solid',start_color='FF9900')
     # format
     titles = ['Sunday', 'Large', 'Medium', 'Small', 'SF', 'L3+', 'L2', 'L1', 'L0', 'Adults', 'Children', 'Attendance',
               'Newcomers', 'Absence', 'Care', 'Lost Sheep', 'Cover', 'Absen 1', 'Absen 2', 'Absen 3', 'Absen 4',
               'Absen 1', 'Absen 2', 'Absen 3', 'Absen 4', 'Abs Ttl']
     sheet_total.append(titles)
+    for i in range(1,5):
+        sheet_total.cell(index,i).font = font_bold
+        sheet_total.cell(index,i).alignment = align
+    for i in range(5,27):
+        sheet_total.cell(index,i).font = font_normal
+        sheet_total.cell(index,i).alignment = align
+    for i in range(1,27):
+        sheet_total.cell(index,i).border = border
+        sheet_total.cell(index,i).fill = head_fill_dict[i]
+
+
+
 
     sum_list = []
     for i in range(len(group)):
         mid_list = []
         for j in range(len(group[i]['child'])):
+            index+=1
             data = group[i]['child'][j]
             row_data=[None, None, None, data['ch']]
             small_excel_path = None
@@ -172,7 +205,13 @@ def new_run():
                     break
             if not small_excel_path:
                 row_data.append(0)
+                # color
                 sheet_total.append(row_data)
+                # font,align,border
+                for a in range(1,27):
+                    sheet_total.cell(index,a).font = font_normal
+                    sheet_total.cell(index,a).alignment = align
+                    sheet_total.cell(index,a).border = border
                 mid_list.append(row_data)
                 break
             row_data.append(1)
@@ -195,6 +234,16 @@ def new_run():
             row_data.append(sum(child_ab_list)+sum(adult_ab_list))
             mid_list.append(row_data)
             sheet_total.append(row_data)
+            # font,align,border
+            for a in range(1, 27):
+                sheet_total.cell(index, a).font = font_normal
+                sheet_total.cell(index, a).alignment = align
+                sheet_total.cell(index, a).border = border
+            # color
+            for a in range(18,26):
+                if sheet_total.cell(index,a).value:
+                    sheet_total.cell(index,a).fill = head_fill_dict[a]
+                    sheet_total.cell(index,4).fill = head_fill_dict[a]
 
         mid_data = [None,None,group[i]['name'],'小总']
         for a in range(4,26):
@@ -204,15 +253,40 @@ def new_run():
                     continue
                 sums+=item[a]
             mid_data.append(sums)
+        index+=1
+        # merge_cell
+        sheet_total.merge_cells(start_row=index-len(mid_list), start_column=3, end_row=index, end_column=3)
         sheet_total.append(mid_data)
+        sheet_total.cell(index-len(mid_list),3,mid_data[2])
+
+        # font,align,border
+        for a in range(1, 27):
+            sheet_total.cell(index, a).font = font_normal
+            sheet_total.cell(index, a).alignment = align
+            sheet_total.cell(index, a).border = border
+        for a in range(4,27):
+            sheet_total.cell(index,a).fill = fill_blue
         sum_list.append(mid_data)
-    sum_data = [format_date.date(),'HOD',"HOD",'Total']
+    sum_data = ["{}月{}日".format(date[1],date[2]),'HOD',"HOD",'Total']
     for a in range(4,26):
         sums = 0
         for item in sum_list:
             sums += item[a]
         sum_data.append(sums)
+    index+=1
     sheet_total.append(sum_data)
+    # merge_cell
+    sheet_total.merge_cells(start_row=start_index+1, start_column=1, end_row=index, end_column=1)
+    sheet_total.merge_cells(start_row=start_index+1, start_column=2, end_row=index, end_column=2)
+    sheet_total.cell(start_index+1,1,sum_data[0])
+    sheet_total.cell(start_index+1,2,sum_data[1])
+    # font,align,border
+    for a in range(1, 27):
+        sheet_total.cell(index, a).font = font_normal
+        sheet_total.cell(index, a).alignment = align
+        sheet_total.cell(index, a).border = border
+    for a in range(4, 27):
+        sheet_total.cell(index, a).fill = PatternFill(fill_type = 'solid',start_color='FFFF00')
     shutil.copyfile(old_name,'./data/backup.xlsx')
     wb_total.save(export_name)
 
