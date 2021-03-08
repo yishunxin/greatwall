@@ -228,38 +228,39 @@ def new_run():
                     sheet_total.cell(index, a).alignment = align
                     sheet_total.cell(index, a).border = border
                 mid_list.append(row_data)
-                break
-            row_data.append(1)
-            ws_small = openpyxl.load_workbook(small_excel_path, read_only=True, data_only=True).worksheets[0]
-            for a in range(1, ws_small.max_row):
-                if ws_small.cell(a, 1).value == '人数统计' and ws_small.cell(a + 1, 1).value == '类别' and ws_small.cell(
-                                a + 2, 1).value == '颜色定义':
-                    index_small = a
-                    break
-            adult_ab_list = []
-            child_ab_list = []
-            for a in range(7, 11):
-                adult_ab_list.append(int(ws_small.cell(index_small + 3, a).value))
-                child_ab_list.append(int(ws_small.cell(index_small + 4, a).value))
-            attence_list = []
-            for a in range(2, 14):
-                attence_list.append(int(ws_small.cell(index_small + 9, a).value))
-            row_data.extend(attence_list)
-            row_data.extend(adult_ab_list)
-            row_data.extend(child_ab_list)
-            row_data.append(sum(child_ab_list) + sum(adult_ab_list))
-            mid_list.append(row_data)
-            sheet_total.append(row_data)
-            # font,align,border
-            for a in range(1, 27):
-                sheet_total.cell(index, a).font = font_normal
-                sheet_total.cell(index, a).alignment = align
-                sheet_total.cell(index, a).border = border
-            # color
-            for a in range(18, 26):
-                if sheet_total.cell(index, a).value:
-                    sheet_total.cell(index, a).fill = head_fill_dict[a]
-                    sheet_total.cell(index, 4).fill = head_fill_dict[a]
+                continue
+            else:
+                row_data.append(1)
+                ws_small = openpyxl.load_workbook(small_excel_path, read_only=True, data_only=True).worksheets[0]
+                for a in range(1, ws_small.max_row):
+                    if ws_small.cell(a, 1).value == '人数统计' and ws_small.cell(a + 1, 1).value == '类别' and ws_small.cell(
+                                    a + 2, 1).value == '颜色定义':
+                        index_small = a
+                        break
+                adult_ab_list = []
+                child_ab_list = []
+                for a in range(7, 11):
+                    adult_ab_list.append(int(ws_small.cell(index_small + 3, a).value))
+                    child_ab_list.append(int(ws_small.cell(index_small + 4, a).value))
+                attence_list = []
+                for a in range(2, 14):
+                    attence_list.append(int(ws_small.cell(index_small + 9, a).value))
+                row_data.extend(attence_list)
+                row_data.extend(adult_ab_list)
+                row_data.extend(child_ab_list)
+                row_data.append(sum(child_ab_list) + sum(adult_ab_list))
+                mid_list.append(row_data)
+                sheet_total.append(row_data)
+                # font,align,border
+                for a in range(1, 27):
+                    sheet_total.cell(index, a).font = font_normal
+                    sheet_total.cell(index, a).alignment = align
+                    sheet_total.cell(index, a).border = border
+                # color
+                for a in range(18, 26):
+                    if sheet_total.cell(index, a).value:
+                        sheet_total.cell(index, a).fill = head_fill_dict[a]
+                        sheet_total.cell(index, 4).fill = head_fill_dict[a]
 
         mid_data = [None, None, group[i]['name'], '小总']
         for a in range(4, 26):
