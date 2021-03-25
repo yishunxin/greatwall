@@ -109,6 +109,7 @@ def new_run():
 		for j in range(len(group[i]['child'])):
 			index += 1
 			data = group[i]['child'][j]
+			logger.info('====处理{}小家数据，data数据：{}'.format(data['name'],data))
 			row_data = [None, None, None, data['ch']]
 			small_excel_path = None
 			for key, value in small_excels_file_dict.items():
