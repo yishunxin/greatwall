@@ -1,7 +1,12 @@
+import email
 import json
 import os
 import datetime
+import poplib
 import shutil
+import time
+from email.header import decode_header
+from email.parser import Parser
 
 import openpyxl
 import logging
@@ -21,9 +26,134 @@ console.setLevel(logging.INFO)
 logger.addHandler(handler)
 logger.addHandler(console)
 
-logger.info("====开始运行")
+logger.info("开始运行")
 
+class Qmail(object):
+	def __init__(self,user,password):
+		self.user = user  # 邮箱用户名
+		self.password = password  # 邮箱密码
+		self.server = None  # 初始化server，调用login_email方法后更新server
+		self.mails = []  # 初始化邮箱信息列表，调用get_email_lists方法后更新列表
 
+	def login_email(self):
+		# 登录邮箱
+		logger.info('登录QQ邮箱')
+		pop3_server = 'pop.qq.com'
+		try_times = 1
+		while try_times<=3:
+			try:
+				server = poplib.POP3_SSL(host=pop3_server, port=995, timeout=50)
+				# 身份认证:
+				server.user(self.user)
+				server.pass_(self.password)
+				self.server = server
+				logger.info(f'{self.user} 登录邮箱成功')
+				return True
+			except BaseException as e:
+				try_times+=1
+				logger.exception(e)
+				logger.error(f'登录失败，尝试第{try_times}次登录')
+				time.sleep(2)
+		logger.error(f'3次登录失败！请检查用户名密码')
+		return False
+
+	def download_mails(self):
+		# 获取邮件列表
+		resp, mails, octets = self.server.list()  # list()返回所有邮件的编号:
+		# 解析邮件
+		for index in range(len(mails), 0, -1):
+			self.mails.append(self.parser_mail(index))
+
+	# 解析邮件
+	def parser_mail(self, index):
+		'''
+		:param index: 邮件索引
+		:return: 邮件正文、时间、主题、发件人的字典
+		'''
+
+		# 1、获取邮件原文
+		resp, lines, octets = self.server.retr(index)  # 获取第index封邮件，lines存储了邮件的原始文本的每一行
+		# 2、拼接邮件
+		try:
+			msg_content = b'\n'.join(lines).decode('gbk')  # 邮件的原始文本
+		except:
+			try:
+				msg_content = b'\n'.join(lines).decode('utf-8')  # 邮件的原始文本
+			except:
+				return False
+
+		# 3、解析邮件内容
+		try:
+			msg = Parser().parsestr(msg_content)
+		except:
+			return False
+
+		# 4、解析邮件主题(标题)
+		try:
+			Subject = self.decode_str(msg.get("Subject"))
+		except BaseException as e:
+			return False
+
+		# 5、解析邮件时间
+		try:
+			Date = time.strptime(self.decode_str(msg.get("Date"))[0:24], '%a, %d %b %Y %H:%M:%S')
+			Date = time.mktime(Date)  # 获取邮件的接收时间,格式化收件时间
+		except:
+			return False
+
+		# 6、解析发件人
+		try:
+			From = self.decode_str(msg.get("From")).split(' ')[-1]
+		except:
+			From = '<None>'
+
+		return {
+			'From': From,
+			'Date': Date,
+			'Subject': Subject,
+			'Msg': msg,
+		}
+	# 字符编码转换
+	def decode_str(self, str_in):
+		try:
+			value, charset = decode_header(str_in)[0]
+			if charset:
+				value = value.decode(charset)
+			return value
+		except:
+			return str_in
+	# 解析邮件,获取附件
+	def get_att(self, msg_in,folder):
+		attachment_files = []
+		i = 1
+		for part in msg_in.walk():
+			# 获取附件名称类型
+			file_name = part.get_filename()
+			# contType = part.get_content_type()
+			if file_name:
+				h = email.header.Header(file_name)
+
+				# 对附件名称进行解码
+				dh = email.header.decode_header(h)
+				filename = dh[0][0]
+				if dh[0][1]:
+					# 将附件名称可读化
+					filename = self.decode_str(str(filename, dh[0][1]))
+					# print(filename)
+					# filename = filename.encode("utf-8")
+
+				# 下载附件
+				data = part.get_payload(decode=True)
+				if not os.path.exists(folder):
+					os.makedirs(folder)
+				att_file = open(folder + '/' + filename, 'wb') # 注意二进制文件需要用wb模式打开
+				attachment_files.append(filename)
+				att_file.write(data)  # 保存附件
+				att_file.close()
+
+				logger.info(f'附件({i}): {filename}')
+				i += 1
+		return attachment_files
 def load_config():
 	with open('./data/config.txt', 'r', encoding='utf8') as f:
 		data = f.readlines()
@@ -36,6 +166,14 @@ def load_config():
 		for item in data[3:]:
 			if not item:
 				continue
+			if item=='mail':
+				continue
+			if item.startswith('user='):
+				config['user'] = item[5:]
+				continue
+			if item.startswith('password='):
+				config['password'] = item[9:]
+				continue
 			mid, small, name = item.split('-')
 			if mid not in mids:
 				group.append({'name': mid, 'child': []})
@@ -46,10 +184,32 @@ def load_config():
 		config['group'] = group
 		return config, small_count
 
+def check_small_excel_path(folder,data,date):
+	small_excels = os.listdir(folder)
+	small_excels_file_dict = {item: item.split('.')[0].split('-') for item in small_excels}
+	for key, value in small_excels_file_dict.items():
+		if data['name'] == value[0] and list(map(int, date)) == list(map(int, value[3:6])):
+			return os.path.join(folder, key)
+	return None
 
 def new_run():
 	config, small_count = load_config()
-	logger.info('====加载config配置\n{}'.format(config))
+	logger.info('加载config配置\n{}'.format(config))
+	if not config.get('user') or not config.get('password'):
+		logger.warning('没有配置用户名密码，将无法登陆QQ邮箱')
+		qmail = None
+	else:
+		qmail = Qmail(config['user'],config['password'])
+		if qmail.login_email():
+			qmail.download_mails()
+		else:
+			go = input('登陆邮箱失败，请问是否继续：（回车或者输入‘Y’继续）')
+			if go in ['','Y','y']:
+				pass
+			else:
+				logger.info('再见！')
+				input()
+				exit()
 	date = config.get('date')
 	group = config.get('group')
 	flist = os.listdir('./')
@@ -57,11 +217,11 @@ def new_run():
 		if fname.startswith('统计表-') and fname.endswith('.xlsx'):
 			old_name = fname
 			break
-	logger.info('====旧统计表：%s' % old_name)
+	logger.info('旧统计表：%s' % old_name)
 	export_name = '统计表-{}-{}-{}.xlsx'.format(date[0], date[1], date[2])
 	folder = './{}-{}'.format(date[0], date[1])
 	small_excels = os.listdir(folder)
-	logger.info('===={}文件夹下的报表列表：\n{}'.format(folder,small_excels))
+	logger.info('{}文件夹下的报表列表：\n{}'.format(folder,small_excels))
 	small_excels_file_dict = {item: item.split('.')[0].split('-') for item in small_excels}
 	# load 统计表
 	wb_total = openpyxl.load_workbook(old_name)
@@ -109,15 +269,30 @@ def new_run():
 		for j in range(len(group[i]['child'])):
 			index += 1
 			data = group[i]['child'][j]
-			logger.info('====处理{}小家数据，data数据：{}'.format(data['name'],data))
+			logger.info('\n处理{}小家数据，data数据：{}'.format(data['name'],data))
 			row_data = [None, None, None, data['ch']]
-			small_excel_path = None
-			for key, value in small_excels_file_dict.items():
-				if data['name'] == value[0] and list(map(int, date)) == list(map(int, value[3:6])):
-					small_excel_path = os.path.join(folder, key)
-					break
+			small_excel_path = check_small_excel_path(folder,data,date)
+
 			if not small_excel_path:
-				logger.warning('！！没有找到对应的小家报表，小家名：{}'.format(data['name']))
+				logger.warning(f'{data["name"]}小家的报表文件不存在')
+				if qmail:
+					subject = f"{group[i]['name']}-{data['name']}-{date[0]}-{date[1]}-{date[2]}"
+					logger.info(f"从邮箱下载{data['name']}小家的报表,邮件主题为：{subject}")
+					find = False
+					for mail_msg in qmail.mails:
+						if mail_msg:
+							if mail_msg.get('Subject') == subject:
+								print(mail_msg.get('Subject'))
+								qmail.get_att(mail_msg['Msg'],folder)  # 下载邮件中的附件
+								small_excel_path = check_small_excel_path(folder, data, date)
+								find = True
+								break
+					if not find:
+						logger.warning(f"未找到主题为【{subject}】的邮件")
+					if small_excel_path:
+						logger.info(f"{data['name']}小家的报表文件下载成功")
+			if not small_excel_path:
+				logger.warning(f'{data["name"]}小家的报表文件还是不存在')
 				row_data.append(0)
 				# color
 				sheet_total.append(row_data)
@@ -129,6 +304,7 @@ def new_run():
 				mid_list.append(row_data)
 				continue
 			else:
+				logger.warning(f'{data["name"]}小家的报表文件存在')
 				row_data.append(1)
 				ws_small = openpyxl.load_workbook(small_excel_path, read_only=True, data_only=True).worksheets[0]
 				for a in range(1, ws_small.max_row):
@@ -213,7 +389,7 @@ def new_run():
 		sheet_total.cell(index, a).fill = PatternFill(fill_type='solid', start_color='FFFF00')
 	shutil.copyfile(old_name, './data/backup.xlsx')
 	wb_total.save(export_name)
-	logger.info('====恭喜，生成报表成功！报表名：{}\n\n'.format(export_name))
+	logger.info('恭喜，生成报表成功！报表名：{}\n\n'.format(export_name))
 
 
 if __name__ == '__main__':

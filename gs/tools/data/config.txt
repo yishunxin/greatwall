@@ -12,3 +12,6 @@ JMS-JD-基甸
 YLS-YLS-以利沙
 YLS-YSY-约书亚
 YLS-JL-迦勒
+mail
+user=991007889@qq.com
+password=dgynhhzrfpgbbbgf
