@@ -3,6 +3,7 @@ import json
 import os
 import datetime
 import poplib
+import re
 import shutil
 import time
 from email.header import decode_header
@@ -236,29 +237,29 @@ def new_run():
 	side = Side(border_style='thin', color='000000')
 	border = Border(left=side, right=side, top=side, bottom=side)
 	head_fill_dict = {}
-	for i in range(1, 18):
+	for i in range(1, 19):
 		head_fill_dict[i] = PatternFill(fill_type='solid', start_color='00FDFF')
-	head_fill_dict[18] = PatternFill(fill_type='solid', start_color='FF99CC')
-	head_fill_dict[19] = PatternFill(fill_type='solid', start_color='FF00FF')
-	head_fill_dict[20] = PatternFill(fill_type='solid', start_color='FF8080')
-	head_fill_dict[21] = PatternFill(fill_type='solid', start_color='FF0000')
-	head_fill_dict[22] = PatternFill(fill_type='solid', start_color='FF99CC')
-	head_fill_dict[23] = PatternFill(fill_type='solid', start_color='FF00FF')
-	head_fill_dict[24] = PatternFill(fill_type='solid', start_color='FF8080')
-	head_fill_dict[25] = PatternFill(fill_type='solid', start_color='FF0000')
-	head_fill_dict[26] = PatternFill(fill_type='solid', start_color='FF9900')
+	head_fill_dict[19] = PatternFill(fill_type='solid', start_color='FF99CC')
+	head_fill_dict[20] = PatternFill(fill_type='solid', start_color='FF00FF')
+	head_fill_dict[21] = PatternFill(fill_type='solid', start_color='FF8080')
+	head_fill_dict[22] = PatternFill(fill_type='solid', start_color='FF0000')
+	head_fill_dict[23] = PatternFill(fill_type='solid', start_color='FF99CC')
+	head_fill_dict[24] = PatternFill(fill_type='solid', start_color='FF00FF')
+	head_fill_dict[25] = PatternFill(fill_type='solid', start_color='FF8080')
+	head_fill_dict[26] = PatternFill(fill_type='solid', start_color='FF0000')
+	head_fill_dict[27] = PatternFill(fill_type='solid', start_color='FF9900')
 	# format
 	titles = ['Sunday', 'Large', 'Medium', 'Small', 'SF', 'L3+', 'L2', 'L1', 'L0', 'Adults', 'Children', 'Attendance',
-			  'Newcomers', 'Absence', 'Care', 'Lost Sheep', 'Cover', 'Absen 1', 'Absen 2', 'Absen 3', 'Absen 4',
+			  'Newcomers', 'Absence', 'Care', 'Lost Sheep', 'Cover','Delete', 'Absen 1', 'Absen 2', 'Absen 3', 'Absen 4',
 			  'Absen 1', 'Absen 2', 'Absen 3', 'Absen 4', 'Abs Ttl']
 	sheet_total.append(titles)
 	for i in range(1, 5):
 		sheet_total.cell(index, i).font = font_bold
 		sheet_total.cell(index, i).alignment = align
-	for i in range(5, 27):
+	for i in range(5, 28):
 		sheet_total.cell(index, i).font = font_normal
 		sheet_total.cell(index, i).alignment = align
-	for i in range(1, 27):
+	for i in range(1, 28):
 		sheet_total.cell(index, i).border = border
 		sheet_total.cell(index, i).fill = head_fill_dict[i]
 
@@ -281,12 +282,15 @@ def new_run():
 					find = False
 					for mail_msg in qmail.mails:
 						if mail_msg:
-							if mail_msg.get('Subject') == subject:
-								print(mail_msg.get('Subject'))
-								qmail.get_att(mail_msg['Msg'],folder)  # 下载邮件中的附件
-								small_excel_path = check_small_excel_path(folder, data, date)
-								find = True
-								break
+							p = re.match(r'.*({}'.format(f"{group[i]['name']}-{data['name']}")+r'-(\d\d\d\d)-(\d{1,2})-(\d{1,2})).*',mail_msg.get('Subject'))
+							if p:
+								groups = p.groups()
+								if int(date[1]) == int(groups[2]) and int(date[2]) == int(groups[3]) and int(date[0]) == int(groups[1]):
+									print(mail_msg.get('Subject'))
+									qmail.get_att(mail_msg['Msg'],folder)  # 下载邮件中的附件
+									small_excel_path = check_small_excel_path(folder, data, date)
+									find = True
+									break
 					if not find:
 						logger.warning(f"未找到主题为【{subject}】的邮件")
 					if small_excel_path:
@@ -297,7 +301,7 @@ def new_run():
 				# color
 				sheet_total.append(row_data)
 				# font,align,border
-				for a in range(1, 27):
+				for a in range(1, 28):
 					sheet_total.cell(index, a).font = font_normal
 					sheet_total.cell(index, a).alignment = align
 					sheet_total.cell(index, a).border = border
@@ -318,7 +322,7 @@ def new_run():
 					adult_ab_list.append(int(ws_small.cell(index_small + 3, a).value))
 					child_ab_list.append(int(ws_small.cell(index_small + 4, a).value))
 				attence_list = []
-				for a in range(2, 14):
+				for a in range(2, 15):
 					attence_list.append(int(ws_small.cell(index_small + 9, a).value))
 				row_data.extend(attence_list)
 				row_data.extend(adult_ab_list)
@@ -327,18 +331,18 @@ def new_run():
 				mid_list.append(row_data)
 				sheet_total.append(row_data)
 				# font,align,border
-				for a in range(1, 27):
+				for a in range(1, 28):
 					sheet_total.cell(index, a).font = font_normal
 					sheet_total.cell(index, a).alignment = align
 					sheet_total.cell(index, a).border = border
 				# color
-				for a in range(18, 26):
+				for a in range(19, 27):
 					if sheet_total.cell(index, a).value:
 						sheet_total.cell(index, a).fill = head_fill_dict[a]
 						sheet_total.cell(index, 4).fill = head_fill_dict[a]
 
 		mid_data = [None, None, group[i]['name'], '小总']
-		for a in range(4, 26):
+		for a in range(4, 27):
 			sums = 0
 			for item in mid_list:
 				if len(item) <= a:
@@ -351,19 +355,19 @@ def new_run():
 		sheet_total.merge_cells(start_row=index - len(mid_list), start_column=3, end_row=index, end_column=3)
 		sheet_total.cell(index - len(mid_list), 3, mid_data[2])
 		sheet_total.cell(index,4,mid_data[3])
-		col_list=['E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+		col_list=['E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z','AA']
 		for col in col_list:
 			sheet_total['{}{}'.format(col,index)].value = '=SUM({}{}:{}{})'.format(col,index-len(mid_list),col,index-1)
 		# font,align,border
-		for a in range(1, 27):
+		for a in range(1, 28):
 			sheet_total.cell(index, a).font = font_normal
 			sheet_total.cell(index, a).alignment = align
 			sheet_total.cell(index, a).border = border
-		for a in range(4, 27):
+		for a in range(4, 28):
 			sheet_total.cell(index, a).fill = fill_blue
 		sum_list.append(mid_data)
 	sum_data = ["{}月{}日".format(date[1], date[2]), 'HOD', "HOD", 'Total']
-	for a in range(4, 26):
+	for a in range(4, 27):
 		sums = 0
 		for item in sum_list:
 			sums += item[a]
@@ -377,15 +381,15 @@ def new_run():
 	sheet_total.cell(index,3,sum_data[2])
 	sheet_total.cell(index,4,sum_data[3])
 	col_list = ['E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
-				'Z']
+				'Z','AA']
 	for col in col_list:
 		sheet_total['{}{}'.format(col,index)].value = '='+'+'.join([col+str(t_index) for t_index in xiao_zong_index])
 	# font,align,border
-	for a in range(1, 27):
+	for a in range(1, 28):
 		sheet_total.cell(index, a).font = font_normal
 		sheet_total.cell(index, a).alignment = align
 		sheet_total.cell(index, a).border = border
-	for a in range(4, 27):
+	for a in range(4, 28):
 		sheet_total.cell(index, a).fill = PatternFill(fill_type='solid', start_color='FFFF00')
 	shutil.copyfile(old_name, './data/backup.xlsx')
 	wb_total.save(export_name)
