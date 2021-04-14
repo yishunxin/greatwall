@@ -287,8 +287,14 @@ def new_run():
 								groups = p.groups()
 								if int(date[1]) == int(groups[2]) and int(date[2]) == int(groups[3]) and int(date[0]) == int(groups[1]):
 									print(mail_msg.get('Subject'))
-									qmail.get_att(mail_msg['Msg'],folder)  # 下载邮件中的附件
+									attachment_files = qmail.get_att(mail_msg['Msg'],folder)  # 下载邮件中的附件
 									small_excel_path = check_small_excel_path(folder, data, date)
+									if not small_excel_path:
+										if not attachment_files:
+											logger.info('邮件不含附件，继续搜索邮件')
+											continue
+										logger.info('下载的附件中没有找到周报表，继续搜索邮件')
+										continue
 									find = True
 									break
 					if not find:
