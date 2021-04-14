@@ -291,9 +291,9 @@ def new_run():
 									small_excel_path = check_small_excel_path(folder, data, date)
 									if not small_excel_path:
 										if not attachment_files:
-											logger.info('邮件不含附件，继续搜索邮件')
+											logger.warning('邮件不含附件，继续搜索邮件')
 											continue
-										logger.info('下载的附件中没有找到周报表，继续搜索邮件')
+										logger.warning('下载的附件中没有找到周报表，继续搜索邮件')
 										continue
 									find = True
 									break
