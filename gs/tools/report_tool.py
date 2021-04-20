@@ -214,13 +214,31 @@ def new_run():
 	date = config.get('date')
 	group = config.get('group')
 	flist = os.listdir('./')
+	old_name_list = []
 	for fname in flist:
 		if fname.startswith('统计表-') and fname.endswith('.xlsx'):
-			old_name = fname
-			break
+			old_name_list.append(fname)
+	if len(old_name_list)==1:
+		old_name = old_name_list[0]
+	else:
+		t_old_name_list = [item.split('.')[0].split('-') for item in old_name_list]
+		t_old_name_list.sort(key=lambda x:(int(x[1]),int(x[2]),int(x[3])))
+		old_name = t_old_name_list[0]
+		for item in t_old_name_list:
+			if datetime.datetime(year=int(item[1]),month=int(item[2]),day=int(item[3]))>datetime.datetime(year=int(date[0]),month=int(date[1]),day=int(date[2])):
+				break
+			old_name= item
+		t_old_name = '-'.join(old_name)
+		for item in old_name_list:
+			if item.startswith(t_old_name):
+				old_name = item
+				break
 	logger.info('旧统计表：%s' % old_name)
 	export_name = '统计表-{}-{}-{}.xlsx'.format(date[0], date[1], date[2])
 	folder = './{}-{}'.format(date[0], date[1])
+	if not os.path.exists(folder):
+		logger.warning(f'日期文件夹【{folder}】不存在，将创建')
+		os.mkdir(folder)
 	small_excels = os.listdir(folder)
 	logger.info('{}文件夹下的报表列表：\n{}'.format(folder,small_excels))
 	small_excels_file_dict = {item: item.split('.')[0].split('-') for item in small_excels}
