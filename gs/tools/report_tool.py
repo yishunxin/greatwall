@@ -185,11 +185,11 @@ def load_config():
 		config['group'] = group
 		return config, small_count
 
-def check_small_excel_path(folder,data,date):
+def check_small_excel_path(folder,big_name,small_name,date):
 	small_excels = os.listdir(folder)
 	small_excels_file_dict = {item: item.split('.')[0].split('-') for item in small_excels}
 	for key, value in small_excels_file_dict.items():
-		if data['name'] == value[0] and list(map(int, date)) == list(map(int, value[3:6])):
+		if big_name == value[0] and small_name == value[1] and list(map(int, date)) == list(map(int, value[2:5])):
 			return os.path.join(folder, key)
 	return None
 
@@ -290,7 +290,7 @@ def new_run():
 			data = group[i]['child'][j]
 			logger.info('\n处理{}小家数据，data数据：{}'.format(data['name'],data))
 			row_data = [None, None, None, data['ch']]
-			small_excel_path = check_small_excel_path(folder,data,date)
+			small_excel_path = check_small_excel_path(folder,group[i]['name'],data['name'],date)
 
 			if not small_excel_path:
 				logger.warning(f'{data["name"]}小家的报表文件不存在')
@@ -306,7 +306,7 @@ def new_run():
 								if int(date[1]) == int(groups[2]) and int(date[2]) == int(groups[3]) and int(date[0]) == int(groups[1]):
 									print(mail_msg.get('Subject'))
 									attachment_files = qmail.get_att(mail_msg['Msg'],folder)  # 下载邮件中的附件
-									small_excel_path = check_small_excel_path(folder, data, date)
+									small_excel_path = check_small_excel_path(folder,group[i]['name'],data['name'],date)
 									if not small_excel_path:
 										if not attachment_files:
 											logger.warning('邮件不含附件，继续搜索邮件')
