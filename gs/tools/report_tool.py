@@ -3,6 +3,7 @@ import json
 import os
 import datetime
 import poplib
+poplib._MAXLINE=20480
 import re
 import shutil
 import time
