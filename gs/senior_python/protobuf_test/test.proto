@@ -1,0 +1,4 @@
+message CDevice{
+optional int32 devid=1;
+optional string name=2;
+}

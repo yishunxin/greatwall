@@ -1,0 +1,5 @@
+package game;
+message RequestMessage
+{
+    required string message=1;
+}
