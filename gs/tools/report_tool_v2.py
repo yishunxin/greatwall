@@ -276,65 +276,80 @@ def run():
 	for i in range(len(group)):
 		mid_list = []
 		for j in range(len(group[i]['child'])):
-			index += 1
-			data = group[i]['child'][j]
-			logger.info('\n处理{}小家数据，data数据：{}'.format(data['name'], data))
-			row_data = [None, None, None, data['ch']]
-			small_excel_path = check_small_excel_path(folder, group[i]['name'], data['name'], date)
-			if not small_excel_path:
-				logger.warning(f'{data["name"]}小家的报表文件还是不存在')
-				row_data.append(0)
-				# color
-				sheet_total.append(row_data)
-				# font,align,border
-				for a in range(1, 28):
-					sheet_total.cell(index, a).font = font_normal
-					sheet_total.cell(index, a).alignment = align
-					sheet_total.cell(index, a).border = border
-				mid_list.append(row_data)
-				continue
-			else:
-				logger.info(f'{data["name"]}小家的报表文件存在')
-				row_data.append(1)
-				if small_excel_path.split('.')[-1] == 'xls':
-					logger.info(f'{data["name"]}小家的报表文件为xls格式，执行格式转换。（请确保电脑装有较新的excel软件）')
-					try:
-						xls2xlsx(os.path.join(os.getcwd(), small_excel_path))
-						small_excel_path += 'x'
-						logger.info("格式转换成功")
-					except Exception as e:
-						logger.exception(e)
-						raise RuntimeError("格式转换失败")
-				ws_small = openpyxl.load_workbook(small_excel_path, read_only=True, data_only=True).worksheets[0]
-				for a in range(1, ws_small.max_row):
-					if ws_small.cell(a, 1).value == '人数统计' and ws_small.cell(a + 1, 1).value == '类别' and ws_small.cell(
-							a + 2, 1).value == '颜色定义':
-						index_small = a
-						break
-				adult_ab_list = []
-				child_ab_list = []
-				for a in range(7, 11):
-					adult_ab_list.append(int(ws_small.cell(index_small + 3, a).value))
-					child_ab_list.append(int(ws_small.cell(index_small + 4, a).value))
-				attence_list = []
-				for a in range(2, 15):
-					attence_list.append(int(ws_small.cell(index_small + 9, a).value))
-				row_data.extend(attence_list)
-				row_data.extend(adult_ab_list)
-				row_data.extend(child_ab_list)
-				row_data.append(sum(child_ab_list) + sum(adult_ab_list))
-				mid_list.append(row_data)
-				sheet_total.append(row_data)
-				# font,align,border
-				for a in range(1, 28):
-					sheet_total.cell(index, a).font = font_normal
-					sheet_total.cell(index, a).alignment = align
-					sheet_total.cell(index, a).border = border
-				# color
-				for a in range(19, 27):
-					if sheet_total.cell(index, a).value:
-						sheet_total.cell(index, a).fill = head_fill_dict[a]
-						sheet_total.cell(index, 4).fill = head_fill_dict[a]
+			try:
+				index += 1
+				data = group[i]['child'][j]
+				logger.info('\n开始处理{}小家数据，data数据：{}'.format(data['name'], data))
+				row_data = [None, None, None, data['ch']]
+				small_excel_path = check_small_excel_path(folder, group[i]['name'], data['name'], date)
+				if not small_excel_path:
+					logger.warning(f'{data["name"]}小家的报表文件还是不存在')
+					row_data.append(0)
+					# color
+					sheet_total.append(row_data)
+					# font,align,border
+					for a in range(1, 28):
+						sheet_total.cell(index, a).font = font_normal
+						sheet_total.cell(index, a).alignment = align
+						sheet_total.cell(index, a).border = border
+					mid_list.append(row_data)
+					continue
+				else:
+					logger.info(f'{data["name"]}小家的报表文件存在')
+					row_data.append(1)
+					if small_excel_path.split('.')[-1] == 'xls':
+						logger.info(f'{data["name"]}小家的报表文件为xls格式，执行格式转换。（请确保电脑装有较新的excel软件）')
+						try:
+							xls2xlsx(os.path.join(os.getcwd(), small_excel_path))
+							small_excel_path += 'x'
+							logger.info("格式转换成功")
+						except Exception as e:
+							logger.exception(e)
+							raise RuntimeError("格式转换失败")
+					ws_small = openpyxl.load_workbook(small_excel_path, read_only=True, data_only=True).worksheets[0]
+					for a in range(1, ws_small.max_row):
+						if ws_small.cell(a, 1).value == '人数统计' and ws_small.cell(a + 1, 1).value == '类别' and ws_small.cell(
+								a + 2, 1).value == '颜色定义':
+							index_small = a
+							break
+					adult_ab_list = []
+					child_ab_list = []
+					for a in range(7, 11):
+						try:
+							t_index = index_small + 3
+							adult_ab_list.append(int(ws_small.cell(t_index, a).value))
+							t_index = index_small + 4
+							child_ab_list.append(int(ws_small.cell(t_index, a).value))
+						except TypeError as e:
+							logger.error(f'{data["name"]}小家的报表中单元格第{t_index}行第{a}列数据有误，请检查')
+							raise e
+					attence_list = []
+					for a in range(2, 15):
+						try:
+							attence_list.append(int(ws_small.cell(index_small + 9, a).value))
+						except TypeError as e:
+							logger.error(f'{data["name"]}小家的报表中单元格第{index_small + 9}行第{a}列数据有误，请检查')
+							raise e
+					row_data.extend(attence_list)
+					row_data.extend(adult_ab_list)
+					row_data.extend(child_ab_list)
+					row_data.append(sum(child_ab_list) + sum(adult_ab_list))
+					mid_list.append(row_data)
+					sheet_total.append(row_data)
+					# font,align,border
+					for a in range(1, 28):
+						sheet_total.cell(index, a).font = font_normal
+						sheet_total.cell(index, a).alignment = align
+						sheet_total.cell(index, a).border = border
+					# color
+					for a in range(19, 27):
+						if sheet_total.cell(index, a).value:
+							sheet_total.cell(index, a).fill = head_fill_dict[a]
+							sheet_total.cell(index, 4).fill = head_fill_dict[a]
+				logger.info(f"\n处理{data['name']}小家数据完成")
+			except Exception as e:
+				logger.error(f"\n处理{data['name']}小家数据失败")
+				raise e
 
 		mid_data = [None, None, group[i]['name'], '小总']
 		for a in range(4, 27):
