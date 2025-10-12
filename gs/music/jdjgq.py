@@ -18,6 +18,8 @@ from gs.common.cdb import db_jdjgq
 from gs.model.jdjgq import Music
 
 logger = logging.getLogger("jdjgq")
+
+
 def get_music_info():
     base_url = "http://www.jdjgq.com/play/url.php"
     for i in range(0, 4000):
@@ -40,10 +42,10 @@ def get_music_info():
                 db_jdjgq.session.execute(Music.__table__.insert(), model_list)
                 db_jdjgq.session.commit()
             except Exception as e:
-                print e
+                print(e)
                 db_jdjgq.session.rollback()
         except Exception as e:
-            print e
+            print(e)
 
 
 def process_music_info():
@@ -57,7 +59,7 @@ def process_music_info():
                 music.album = url_list[-2]
         db_jdjgq.session.commit()
     except Exception as e:
-        print e
+        print(e)
         db_jdjgq.session.rollback()
 
 
@@ -70,13 +72,13 @@ def down_music_thread(music_list):
             folder = os.path.join(root_path, music.author, music.album)
             if not os.path.exists(folder):
                 os.makedirs(folder)
-            music_file = os.path.join(folder,music.name+'.mp3')
-            lrc_file = os.path.join(folder,music.name+'.lrc')
-            lrc_url = "http://www.jdjgq.com/"+'/'.join(music.lrc_url.split('/')[3:])
+            music_file = os.path.join(folder, music.name + '.mp3')
+            lrc_file = os.path.join(folder, music.name + '.lrc')
+            lrc_url = "http://www.jdjgq.com/" + '/'.join(music.lrc_url.split('/')[3:])
             urllib.urlretrieve(music.music_url.encode('utf8'), music_file)
-            urllib.urlretrieve(lrc_url.encode('utf8'),lrc_file)
+            urllib.urlretrieve(lrc_url.encode('utf8'), lrc_file)
             try:
-                db_jdjgq.session.query(Music).filter(Music.m_id==music.m_id).update({Music.status:1})
+                db_jdjgq.session.query(Music).filter(Music.m_id == music.m_id).update({Music.status: 1})
                 db_jdjgq.session.commit()
             except Exception as e:
                 logger.exception(e)
@@ -86,12 +88,13 @@ def down_music_thread(music_list):
             db_jdjgq.session.query(Music).filter(Music.m_id == music.m_id).update({Music.status: 2})
             db_jdjgq.session.commit()
 
+
 def start_down():
-    music_list = db_jdjgq.session.query(Music).filter(Music.status=='0').all()
+    music_list = db_jdjgq.session.query(Music).filter(Music.status == '0').all()
     logger.info("start,lenth=={}".format(str(len(music_list))))
-    percount = len(music_list)/10
+    percount = len(music_list) / 10
     for i in range(10):
-        t_music_list = music_list[i*percount:(i+1)*percount]
+        t_music_list = music_list[i * percount:(i + 1) * percount]
         t = threading.Thread(target=down_music_thread, args=(t_music_list,))
         t.start()
 
